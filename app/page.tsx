@@ -1,8 +1,136 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 
 export default function Home() {
+  const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState<"demo" | "trial">("demo");
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    clinic: "",
+    message: ""
+  });
+  const [submitted, setSubmitted] = useState(false);
+
+  const openModal = (type: "demo" | "trial") => {
+    setModalType(type);
+    setShowModal(true);
+    setSubmitted(false);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setFormData({ name: "", email: "", phone: "", clinic: "", message: "" });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // In production, this would send to your backend
+    console.log("Form submitted:", formData);
+    setSubmitted(true);
+  };
+
   return (
     <>
+      {/* Modal */}
+      {showModal && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={closeModal}>×</button>
+
+            {!submitted ? (
+              <>
+                <h2>{modalType === "demo" ? "Book en demo 📅" : "Start din gratis prøveperiode 🎉"}</h2>
+                <p>
+                  {modalType === "demo"
+                    ? "Fyll ut skjemaet så tar vi kontakt for å avtale en uforpliktende demo."
+                    : "Fyll ut skjemaet så sender vi deg innloggingsdetaljer på e-post."}
+                </p>
+
+                <form onSubmit={handleSubmit}>
+                  <div className="form-group">
+                    <label htmlFor="name">Navn *</label>
+                    <input
+                      type="text"
+                      id="name"
+                      required
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      placeholder="Ditt navn"
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="email">E-post *</label>
+                    <input
+                      type="email"
+                      id="email"
+                      required
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      placeholder="din@epost.no"
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="phone">Telefon</label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      placeholder="+47 xxx xx xxx"
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="clinic">Klinikknavn</label>
+                    <input
+                      type="text"
+                      id="clinic"
+                      value={formData.clinic}
+                      onChange={(e) => setFormData({ ...formData, clinic: e.target.value })}
+                      placeholder="Navn på klinikken"
+                    />
+                  </div>
+
+                  {modalType === "demo" && (
+                    <div className="form-group">
+                      <label htmlFor="message">Melding</label>
+                      <textarea
+                        id="message"
+                        rows={3}
+                        value={formData.message}
+                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                        placeholder="Er det noe spesielt du vil se i demoen?"
+                      />
+                    </div>
+                  )}
+
+                  <button type="submit" className="btn btn-primary btn-full">
+                    {modalType === "demo" ? "Send forespørsel" : "Start gratis prøveperiode"}
+                  </button>
+                </form>
+              </>
+            ) : (
+              <div className="success-message">
+                <div className="success-icon">✅</div>
+                <h2>Takk for din henvendelse!</h2>
+                <p>
+                  {modalType === "demo"
+                    ? "Vi tar kontakt med deg innen 24 timer for å avtale en demo."
+                    : "Sjekk e-posten din for innloggingsdetaljer. Vi gleder oss til å ha deg med!"}
+                </p>
+                <button className="btn btn-secondary" onClick={closeModal}>Lukk</button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Navbar */}
       <nav className="navbar">
         <div className="container">
@@ -12,13 +140,13 @@ export default function Home() {
           </a>
           <ul className="navbar-links">
             <li><a href="#funksjoner">Funksjoner</a></li>
-            <li><a href="#sikkerhet">Sikkerhet</a></li>
             <li><a href="#omtaler">Omtaler</a></li>
+            <li><a href="#sikkerhet">Sikkerhet</a></li>
             <li><a href="#kontakt">Kontakt</a></li>
           </ul>
           <div className="navbar-cta">
-            <a href="#demo" className="btn btn-secondary">Book en demo</a>
-            <a href="#start" className="btn btn-primary">Prøv gratis</a>
+            <button onClick={() => openModal("demo")} className="btn btn-secondary">Book en demo</button>
+            <button onClick={() => openModal("trial")} className="btn btn-primary">Prøv gratis</button>
           </div>
         </div>
       </nav>
@@ -41,15 +169,15 @@ export default function Home() {
               det du gjør best: å hjelpe mennesker.
             </p>
             <div className="hero-buttons">
-              <a href="#start" className="btn btn-primary">
+              <button onClick={() => openModal("trial")} className="btn btn-primary">
                 Prøv gratis i 30 dager
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                   <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-              </a>
-              <a href="#demo" className="btn btn-secondary">
+              </button>
+              <button onClick={() => openModal("demo")} className="btn btn-secondary">
                 Se hvordan det fungerer
-              </a>
+              </button>
             </div>
             <div className="hero-trust">
               <div className="hero-trust-item">
@@ -242,12 +370,12 @@ export default function Home() {
               Vi elsker å snakke med folk som oss — som brenner for god pasientbehandling.
               Ta kontakt så finner vi ut hvordan vi kan hjelpe akkurat deg.
             </p>
-            <a href="mailto:hei@secureclinic.no" className="btn">
-              Send oss en melding
+            <button onClick={() => openModal("demo")} className="btn">
+              Ta kontakt
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-            </a>
+            </button>
           </div>
         </div>
       </section>
@@ -272,21 +400,21 @@ export default function Home() {
                 <ul>
                   <li><a href="#funksjoner">Funksjoner</a></li>
                   <li><a href="#sikkerhet">Sikkerhet</a></li>
-                  <li><a href="#priser">Priser</a></li>
+                  <li><a href="#omtaler">Omtaler</a></li>
                 </ul>
               </div>
               <div className="footer-links-column">
                 <h4>Selskap</h4>
                 <ul>
-                  <li><a href="#om-oss">Om oss</a></li>
                   <li><a href="#kontakt">Kontakt</a></li>
-                  <li><a href="#blogg">Blogg</a></li>
+                  <li><a href="mailto:hei@secureclinic.no">E-post</a></li>
+                  <li><a href="tel:+4712345678">Ring oss</a></li>
                 </ul>
               </div>
               <div className="footer-links-column">
                 <h4>Hjelp</h4>
                 <ul>
-                  <li><a href="#support">Support</a></li>
+                  <li><a href="mailto:support@secureclinic.no">Support</a></li>
                   <li><a href="#personvern">Personvern</a></li>
                   <li><a href="#vilkar">Vilkår</a></li>
                 </ul>
@@ -296,9 +424,8 @@ export default function Home() {
           <div className="footer-bottom">
             <p>© 2025 Secure Clinic Journal. Laget med 💚 i Norge.</p>
             <div className="footer-bottom-links">
-              <a href="#personvern">Personvern</a>
-              <a href="#vilkar">Vilkår</a>
-              <a href="#cookies">Cookies</a>
+              <a href="mailto:hei@secureclinic.no">hei@secureclinic.no</a>
+              <a href="tel:+4712345678">+47 123 45 678</a>
             </div>
           </div>
         </div>

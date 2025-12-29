@@ -524,13 +524,36 @@ body {
 .hero-trust-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   color: var(--color-text-muted);
   font-size: 14px;
+  font-weight: 500;
 }
 
 .hero-trust-item .icon {
-  font-size: 20px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary-light);
+  border-radius: 8px;
+  color: var(--color-primary);
+}
+
+.hero-trust-item .icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.hero-trust-item:nth-child(2) .icon {
+  background: var(--color-secondary-light);
+  color: var(--color-secondary);
+}
+
+.hero-trust-item:nth-child(3) .icon {
+  background: var(--color-accent-light);
+  color: var(--color-accent);
 }
 
 /* ===== FEATURES SECTION ===== */
@@ -803,15 +826,20 @@ body {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 
 .security-list li {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 14px;
   color: var(--color-text-secondary);
   font-size: 16px;
+  line-height: 1.5;
+}
+
+.security-list li strong {
+  display: inline;
 }
 
 .security-list .check {

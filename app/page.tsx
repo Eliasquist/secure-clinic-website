@@ -208,15 +208,15 @@ export default function Home() {
             </div>
             <div className="hero-trust">
               <div className="hero-trust-item">
-                <span className="icon">💉</span>
+                <span className="icon"><SyringeIcon /></span>
                 Injeksjonskart
               </div>
               <div className="hero-trust-item">
-                <span className="icon">📦</span>
+                <span className="icon"><PackageIcon /></span>
                 Batchsporing
               </div>
               <div className="hero-trust-item">
-                <span className="icon">🔒</span>
+                <span className="icon"><LockIcon /></span>
                 GDPR-klar
               </div>
             </div>

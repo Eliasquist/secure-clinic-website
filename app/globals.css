@@ -826,7 +826,7 @@ body {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
 }
 
 .security-list li {
@@ -834,12 +834,17 @@ body {
   align-items: flex-start;
   gap: 14px;
   color: var(--color-text-secondary);
-  font-size: 16px;
-  line-height: 1.5;
+  font-size: 15px;
+  line-height: 1.6;
 }
 
 .security-list li strong {
-  display: inline;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.security-list li span:last-child {
+  flex: 1;
 }
 
 .security-list .check {

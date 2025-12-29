@@ -334,23 +334,23 @@ export default function Home() {
               <ul className="security-list">
                 <li>
                   <span className="check">✓</span>
-                  <strong>Envelope encryption</strong> — Pasientdata krypteres med unike nøkler per felt
+                  <span><strong>Envelope encryption</strong> — unike nøkler per felt</span>
                 </li>
                 <li>
                   <span className="check">✓</span>
-                  <strong>Audit-logg med hash-kjede</strong> — Umulig å slette eller endre logger uten at det oppdages
+                  <span><strong>Hash-kjede logg</strong> — kan ikke slettes eller endres</span>
                 </li>
                 <li>
                   <span className="check">✓</span>
-                  <strong>Tenant-isolasjon</strong> — Klinikker kan aldri se hverandres data
+                  <span><strong>Tenant-isolasjon</strong> — klinikker ser aldri hverandres data</span>
                 </li>
                 <li>
                   <span className="check">✓</span>
-                  <strong>Rollebasert tilgang</strong> — Lege, admin, terapeut, resepsjon — alle med riktige rettigheter
+                  <span><strong>Rollebasert tilgang</strong> — lege, admin, terapeut, resepsjon</span>
                 </li>
                 <li>
                   <span className="check">✓</span>
-                  <strong>GDPR-verktøy innebygd</strong> — SAR-eksport, anonymisering, behandlingsrestriksjon
+                  <span><strong>GDPR innebygd</strong> — SAR-eksport, anonymisering, restriksjon</span>
                 </li>
               </ul>
             </div>

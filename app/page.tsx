@@ -28,7 +28,6 @@ export default function Home() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // In production, this would send to your backend
     console.log("Form submitted:", formData);
     setSubmitted(true);
   };
@@ -154,16 +153,16 @@ export default function Home() {
           <div className="hero-content">
             <div className="hero-badge">
               <span className="dot"></span>
-              Kommer snart
+              For estetiske klinikker
             </div>
             <h1>
-              Et journalsystem som<br />
-              <span className="gradient-text">endelig setter deg først</span>
+              Journalsystemet bygget for<br />
+              <span className="gradient-text">injeksjonsbehandlinger</span>
             </h1>
             <p className="hero-subtitle">
-              Vi bygger et journalsystem som er enkelt å bruke, trygt for pasientene —
-              og som lar deg fokusere på det du gjør best: å hjelpe mennesker.
-              Vil du være med å forme fremtidens klinikkverktøy?
+              Vi bygger et spesialisert journalsystem for klinikker som driver med
+              injeksjonsbehandlinger — med innebygd injeksjonskartlegging,
+              produktsporing, og automatisk fakturering. Alt GDPR-klart fra dag én.
             </p>
             <div className="hero-buttons">
               <button onClick={() => openModal("trial")} className="btn btn-primary">
@@ -178,16 +177,16 @@ export default function Home() {
             </div>
             <div className="hero-trust">
               <div className="hero-trust-item">
+                <span className="icon">💉</span>
+                Injeksjonskart
+              </div>
+              <div className="hero-trust-item">
+                <span className="icon">📦</span>
+                Batchsporing
+              </div>
+              <div className="hero-trust-item">
                 <span className="icon">🔒</span>
-                Sikkerhet i fokus
-              </div>
-              <div className="hero-trust-item">
-                <span className="icon">🇳🇴</span>
-                Laget i Norge
-              </div>
-              <div className="hero-trust-item">
-                <span className="icon">💬</span>
-                Norsk support
+                GDPR-klar
               </div>
             </div>
           </div>
@@ -207,66 +206,66 @@ export default function Home() {
       <section id="funksjoner" className="features section">
         <div className="container">
           <div className="features-header">
-            <h2>Det vi bygger for deg</h2>
-            <p>Funksjoner designet for en enklere arbeidshverdag</p>
+            <h2>Bygget for injeksjonsklinikker</h2>
+            <p>Funksjoner du faktisk trenger — ikke generiske løsninger</p>
           </div>
           <div className="features-grid">
             <div className="feature-card warm-card">
-              <div className="feature-icon">💝</div>
-              <h3>Enkel i bruk</h3>
-              <p>Intuitivt design som ikke krever opplæring i dagesvis. Du og teamet ditt kommer raskt i gang.</p>
+              <div className="feature-icon">💉</div>
+              <h3>Injeksjonskartlegging</h3>
+              <p>Marker nøyaktig hvor du setter injeksjoner på et visuelt kart. Dose, dybde, produkt og sone — alt dokumentert automatisk.</p>
             </div>
             <div className="feature-card warm-card">
-              <div className="feature-icon">🔒</div>
-              <h3>Trygg pasientdata</h3>
-              <p>Kryptering og sikkerhet er bygget inn fra starten. Vi tar personvern på alvor.</p>
+              <div className="feature-icon">📦</div>
+              <h3>Produktsporing & Batch</h3>
+              <p>Spor hvilke produkter og batchnumre som brukes på hver pasient. Viktig for tilbakekalling og komplikasjonsoppfølging.</p>
             </div>
             <div className="feature-card warm-card">
-              <div className="feature-icon">📅</div>
-              <h3>Smart timebestilling</h3>
-              <p>Pasientene booker selv online, og du får full oversikt. Færre telefoner, mer tid til omsorg.</p>
+              <div className="feature-icon">✍️</div>
+              <h3>Digital signering</h3>
+              <p>Lås og signer konsultasjoner med kryptografisk hash. Dokumentet kan ikke endres i ettertid uten at det vises.</p>
             </div>
             <div className="feature-card warm-card">
-              <div className="feature-icon">📋</div>
-              <h3>Alt på ett sted</h3>
-              <p>Journal, faktura, timeavtaler og kommunikasjon — samlet i ett enkelt system.</p>
+              <div className="feature-icon">💰</div>
+              <h3>Automatisk fakturautkast</h3>
+              <p>Når en konsultasjon signeres, genereres et fakturautkast automatisk basert på behandlingen.</p>
             </div>
             <div className="feature-card warm-card">
-              <div className="feature-icon">🇳🇴</div>
-              <h3>Norske krav i fokus</h3>
-              <p>Vi bygger med tanke på norsk regelverk og GDPR fra dag én.</p>
+              <div className="feature-icon">⚠️</div>
+              <h3>Komplikasjonslogg</h3>
+              <p>Registrer og følg opp komplikasjoner med kobling til opprinnelig behandling og bilder.</p>
             </div>
             <div className="feature-card warm-card">
-              <div className="feature-icon">☁️</div>
-              <h3>Alltid tilgjengelig</h3>
-              <p>Jobb fra kontoret, hjemme eller på farten. Alt ligger trygt i skyen.</p>
+              <div className="feature-icon">📤</div>
+              <h3>GDPR-eksport</h3>
+              <p>Generer fullstendig pasientdata-eksport med ett klikk. Perfekt for innsynsforespørsler (SAR).</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Why Us Section (replaces testimonials) */}
+      {/* Why Us Section */}
       <section id="hvorfor-oss" className="why-us section">
         <div className="container">
           <div className="why-us-header">
             <h2>Hvorfor velge oss?</h2>
-            <p>Vi er et lite team med stor lidenskap for å lage gode verktøy</p>
+            <p>Vi bygger det vi selv savnet i markedet</p>
           </div>
           <div className="why-us-grid">
+            <div className="why-us-card warm-card">
+              <div className="why-us-icon">🎯</div>
+              <h3>Spesialisert</h3>
+              <p>Ikke et generisk system tilpasset alt. Bygget fra bunnen for injeksjonsbehandlinger og estetiske klinikker.</p>
+            </div>
+            <div className="why-us-card warm-card">
+              <div className="why-us-icon">🛡️</div>
+              <h3>Sikkerhet først</h3>
+              <p>AES-256 kryptering, envelope encryption, og full audit-logg med hash-kjede som ikke kan manipuleres.</p>
+            </div>
             <div className="why-us-card warm-card">
               <div className="why-us-icon">🤝</div>
               <h3>Tett samarbeid</h3>
               <p>Som tidlig bruker får du direkte kontakt med utviklerne. Din feedback former produktet.</p>
-            </div>
-            <div className="why-us-card warm-card">
-              <div className="why-us-icon">🚀</div>
-              <h3>Aktiv utvikling</h3>
-              <p>Vi jobber kontinuerlig med forbedringer og nye funksjoner basert på reelle behov.</p>
-            </div>
-            <div className="why-us-card warm-card">
-              <div className="why-us-icon">💚</div>
-              <h3>Personlig service</h3>
-              <p>Ingen roboter eller ventelister. Du snakker med ekte mennesker som bryr seg.</p>
             </div>
           </div>
         </div>
@@ -277,54 +276,54 @@ export default function Home() {
         <div className="container">
           <div className="security-content">
             <div className="security-text">
-              <h2>Sikkerhet vi <span className="gradient-text">tar på alvor</span></h2>
+              <h2>Sikkerhet bygget <span className="gradient-text">fra bunnen</span></h2>
               <p>
-                Pasientene dine stoler på deg med sine mest private opplysninger.
-                Vi bygger systemet med sikkerhet som førsteprioritet.
+                Vi har ikke lagt på sikkerhet i ettertid — det er fundamentet
+                som alt annet er bygget på.
               </p>
               <ul className="security-list">
                 <li>
                   <span className="check">✓</span>
-                  Kryptering av all sensitiv data
+                  <strong>Envelope encryption</strong> — Pasientdata krypteres med unike nøkler per felt
                 </li>
                 <li>
                   <span className="check">✓</span>
-                  Sikker innlogging
+                  <strong>Audit-logg med hash-kjede</strong> — Umulig å slette eller endre logger uten at det oppdages
                 </li>
                 <li>
                   <span className="check">✓</span>
-                  Rollebasert tilgangskontroll
+                  <strong>Tenant-isolasjon</strong> — Klinikker kan aldri se hverandres data
                 </li>
                 <li>
                   <span className="check">✓</span>
-                  Bygget med GDPR i tankene
+                  <strong>Rollebasert tilgang</strong> — Lege, admin, terapeut, resepsjon — alle med riktige rettigheter
                 </li>
                 <li>
                   <span className="check">✓</span>
-                  Full sporbarhet og logging
+                  <strong>GDPR-verktøy innebygd</strong> — SAR-eksport, anonymisering, behandlingsrestriksjon
                 </li>
               </ul>
             </div>
             <div className="security-badges">
               <div className="security-badge warm-card">
                 <div className="security-badge-icon">🔐</div>
-                <h4>Kryptering</h4>
-                <p>AES-256</p>
+                <h4>AES-256-GCM</h4>
+                <p>Autentisert kryptering</p>
               </div>
               <div className="security-badge warm-card">
                 <div className="security-badge-icon">📜</div>
                 <h4>GDPR</h4>
-                <p>I fokus</p>
+                <p>Bygget inn fra start</p>
+              </div>
+              <div className="security-badge warm-card">
+                <div className="security-badge-icon">🔗</div>
+                <h4>Hash-kjede</h4>
+                <p>Manipulasjonssikker logg</p>
               </div>
               <div className="security-badge warm-card">
                 <div className="security-badge-icon">☁️</div>
                 <h4>Azure</h4>
-                <p>Sikker sky</p>
-              </div>
-              <div className="security-badge warm-card">
-                <div className="security-badge-icon">💚</div>
-                <h4>Support</h4>
-                <p>Vi er her for deg</p>
+                <p>Enterprise sky</p>
               </div>
             </div>
           </div>
@@ -335,10 +334,10 @@ export default function Home() {
       <section id="kontakt" className="cta section">
         <div className="container">
           <div className="cta-card">
-            <h2>Nysgjerrig? La oss snakke! ☕</h2>
+            <h2>Klar for et bedre journalsystem? 💉</h2>
             <p>
-              Vi leter etter klinikker som vil være med på reisen fra starten.
-              Ta kontakt så forteller vi mer om hva vi holder på med.
+              Vi bygger dette for deg som driver med injeksjonsbehandlinger.
+              Ta kontakt så viser vi deg hva vi holder på med.
             </p>
             <button onClick={() => openModal("demo")} className="btn">
               Ta kontakt
@@ -360,8 +359,8 @@ export default function Home() {
                 <span>Secure Clinic</span>
               </div>
               <p>
-                Vi bygger journalsystemet vi selv skulle ønske fantes.
-                Laget med hjerte i Norge.
+                Journalsystemet laget spesielt for estetiske klinikker og
+                injeksjonsbehandlinger. Bygget med sikkerhet og GDPR i kjernen.
               </p>
             </div>
             <div className="footer-links">

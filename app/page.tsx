@@ -17,6 +17,7 @@ import {
   LinkIcon,
   CloudIcon,
 } from "./icons";
+import ChatBot from "./ChatBot";
 
 const heroImages = [
   { src: "/injection-treatment.png", alt: "Profesjonell injeksjonsbehandling" },
@@ -440,6 +441,9 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* AI Chatbot */}
+      <ChatBot />
     </>
   );
 }

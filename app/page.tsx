@@ -43,11 +43,11 @@ export default function Home() {
 
             {!submitted ? (
               <>
-                <h2>{modalType === "demo" ? "Book en demo 📅" : "Start din gratis prøveperiode 🎉"}</h2>
+                <h2>{modalType === "demo" ? "Book en demo 📅" : "Bli med som tidlig bruker 🎉"}</h2>
                 <p>
                   {modalType === "demo"
                     ? "Fyll ut skjemaet så tar vi kontakt for å avtale en uforpliktende demo."
-                    : "Fyll ut skjemaet så sender vi deg innloggingsdetaljer på e-post."}
+                    : "Vi er på jakt etter klinikker som vil være med å forme produktet. Fyll ut skjemaet så tar vi kontakt!"}
                 </p>
 
                 <form onSubmit={handleSubmit}>
@@ -105,24 +105,22 @@ export default function Home() {
                         rows={3}
                         value={formData.message}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                        placeholder="Er det noe spesielt du vil se i demoen?"
+                        placeholder="Er det noe spesielt du lurer på?"
                       />
                     </div>
                   )}
 
                   <button type="submit" className="btn btn-primary btn-full">
-                    {modalType === "demo" ? "Send forespørsel" : "Start gratis prøveperiode"}
+                    {modalType === "demo" ? "Send forespørsel" : "Meld interesse"}
                   </button>
                 </form>
               </>
             ) : (
               <div className="success-message">
                 <div className="success-icon">✅</div>
-                <h2>Takk for din henvendelse!</h2>
+                <h2>Takk for din interesse!</h2>
                 <p>
-                  {modalType === "demo"
-                    ? "Vi tar kontakt med deg innen 24 timer for å avtale en demo."
-                    : "Sjekk e-posten din for innloggingsdetaljer. Vi gleder oss til å ha deg med!"}
+                  Vi tar kontakt med deg så snart som mulig. Vi gleder oss til å høre fra deg!
                 </p>
                 <button className="btn btn-secondary" onClick={closeModal}>Lukk</button>
               </div>
@@ -140,13 +138,12 @@ export default function Home() {
           </a>
           <ul className="navbar-links">
             <li><a href="#funksjoner">Funksjoner</a></li>
-            <li><a href="#omtaler">Omtaler</a></li>
             <li><a href="#sikkerhet">Sikkerhet</a></li>
             <li><a href="#kontakt">Kontakt</a></li>
           </ul>
           <div className="navbar-cta">
             <button onClick={() => openModal("demo")} className="btn btn-secondary">Book en demo</button>
-            <button onClick={() => openModal("trial")} className="btn btn-primary">Prøv gratis</button>
+            <button onClick={() => openModal("trial")} className="btn btn-primary">Meld interesse</button>
           </div>
         </div>
       </nav>
@@ -157,39 +154,39 @@ export default function Home() {
           <div className="hero-content">
             <div className="hero-badge">
               <span className="dot"></span>
-              Trygt og enkelt for alle
+              Kommer snart
             </div>
             <h1>
-              Din klinikk fortjener et<br />
-              <span className="gradient-text">journalsystem som bare fungerer</span>
+              Et journalsystem som<br />
+              <span className="gradient-text">endelig setter deg først</span>
             </h1>
             <p className="hero-subtitle">
-              Vi vet hvor travle dagene kan være. Derfor har vi laget et journalsystem
-              som er enkelt å bruke, trygt for pasientene — og som lar deg fokusere på
-              det du gjør best: å hjelpe mennesker.
+              Vi bygger et journalsystem som er enkelt å bruke, trygt for pasientene —
+              og som lar deg fokusere på det du gjør best: å hjelpe mennesker.
+              Vil du være med å forme fremtidens klinikkverktøy?
             </p>
             <div className="hero-buttons">
               <button onClick={() => openModal("trial")} className="btn btn-primary">
-                Prøv gratis i 30 dager
+                Bli tidlig bruker
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                   <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
               <button onClick={() => openModal("demo")} className="btn btn-secondary">
-                Se hvordan det fungerer
+                Få en demo
               </button>
             </div>
             <div className="hero-trust">
               <div className="hero-trust-item">
-                <span className="icon">✓</span>
-                Ingen binding
+                <span className="icon">🔒</span>
+                Sikkerhet i fokus
               </div>
               <div className="hero-trust-item">
-                <span className="icon">✓</span>
-                Gratis opplæring
+                <span className="icon">🇳🇴</span>
+                Laget i Norge
               </div>
               <div className="hero-trust-item">
-                <span className="icon">✓</span>
+                <span className="icon">💬</span>
                 Norsk support
               </div>
             </div>
@@ -197,7 +194,7 @@ export default function Home() {
           <div className="hero-image">
             <Image
               src="/hero-doctor.png"
-              alt="Fornøyd helsepersonell som bruker Secure Clinic"
+              alt="Helsepersonell som bruker Secure Clinic"
               width={600}
               height={600}
               priority
@@ -210,8 +207,8 @@ export default function Home() {
       <section id="funksjoner" className="features section">
         <div className="container">
           <div className="features-header">
-            <h2>Laget med omtanke for deg</h2>
-            <p>Alt du trenger for en enklere arbeidshverdag</p>
+            <h2>Det vi bygger for deg</h2>
+            <p>Funksjoner designet for en enklere arbeidshverdag</p>
           </div>
           <div className="features-grid">
             <div className="feature-card warm-card">
@@ -222,7 +219,7 @@ export default function Home() {
             <div className="feature-card warm-card">
               <div className="feature-icon">🔒</div>
               <h3>Trygg pasientdata</h3>
-              <p>Bank-nivå sikkerhet beskytter alle pasientopplysninger. Du kan føle deg trygg hver dag.</p>
+              <p>Kryptering og sikkerhet er bygget inn fra starten. Vi tar personvern på alvor.</p>
             </div>
             <div className="feature-card warm-card">
               <div className="feature-icon">📅</div>
@@ -236,67 +233,40 @@ export default function Home() {
             </div>
             <div className="feature-card warm-card">
               <div className="feature-icon">🇳🇴</div>
-              <h3>Norske krav, norsk support</h3>
-              <p>Vi forstår regelverket og snakker ditt språk. Ring oss når du trenger hjelp!</p>
+              <h3>Norske krav i fokus</h3>
+              <p>Vi bygger med tanke på norsk regelverk og GDPR fra dag én.</p>
             </div>
             <div className="feature-card warm-card">
               <div className="feature-icon">☁️</div>
               <h3>Alltid tilgjengelig</h3>
-              <p>Jobb fra kontoret, hjemme eller på farten. Alt ligger trygt i skyen — alltid oppdatert.</p>
+              <p>Jobb fra kontoret, hjemme eller på farten. Alt ligger trygt i skyen.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section id="omtaler" className="testimonials section">
+      {/* Why Us Section (replaces testimonials) */}
+      <section id="hvorfor-oss" className="why-us section">
         <div className="container">
-          <div className="testimonials-header">
-            <h2>Hva kundene våre sier</h2>
-            <p>Vi er stolte av å hjelpe klinikker over hele Norge</p>
+          <div className="why-us-header">
+            <h2>Hvorfor velge oss?</h2>
+            <p>Vi er et lite team med stor lidenskap for å lage gode verktøy</p>
           </div>
-          <div className="testimonials-grid">
-            <div className="testimonial-card warm-card">
-              <div className="testimonial-stars">⭐⭐⭐⭐⭐</div>
-              <p className="testimonial-text">
-                &quot;Endelig et journalsystem som faktisk er enkelt å bruke! Vi sparte masse tid,
-                og pasientene elsker at de kan booke timer selv. Anbefales på det varmeste.&quot;
-              </p>
-              <div className="testimonial-author">
-                <div className="testimonial-avatar">👩‍⚕️</div>
-                <div>
-                  <div className="testimonial-name">Dr. Kristine Berg</div>
-                  <div className="testimonial-role">Tannlege, Bergen Tannklinikk</div>
-                </div>
-              </div>
+          <div className="why-us-grid">
+            <div className="why-us-card warm-card">
+              <div className="why-us-icon">🤝</div>
+              <h3>Tett samarbeid</h3>
+              <p>Som tidlig bruker får du direkte kontakt med utviklerne. Din feedback former produktet.</p>
             </div>
-            <div className="testimonial-card warm-card">
-              <div className="testimonial-stars">⭐⭐⭐⭐⭐</div>
-              <p className="testimonial-text">
-                &quot;Supporten er fantastisk! Da vi trengte hjelp med overgangen, var de der
-                for oss hele veien. Det føles som å ha en ekstra kollega.&quot;
-              </p>
-              <div className="testimonial-author">
-                <div className="testimonial-avatar">👨‍⚕️</div>
-                <div>
-                  <div className="testimonial-name">Thomas Andersen</div>
-                  <div className="testimonial-role">Fysioterapeut, Aktiv Fysio Oslo</div>
-                </div>
-              </div>
+            <div className="why-us-card warm-card">
+              <div className="why-us-icon">🚀</div>
+              <h3>Aktiv utvikling</h3>
+              <p>Vi jobber kontinuerlig med forbedringer og nye funksjoner basert på reelle behov.</p>
             </div>
-            <div className="testimonial-card warm-card">
-              <div className="testimonial-stars">⭐⭐⭐⭐⭐</div>
-              <p className="testimonial-text">
-                &quot;Vi byttet fra et gammelt system og fryktet det verste. Men overgangen
-                var smertefri, og nå lurer vi på hvorfor vi ikke byttet før!&quot;
-              </p>
-              <div className="testimonial-author">
-                <div className="testimonial-avatar">👩‍💼</div>
-                <div>
-                  <div className="testimonial-name">Lise Haugen</div>
-                  <div className="testimonial-role">Klinikksjef, Haugen Helse</div>
-                </div>
-              </div>
+            <div className="why-us-card warm-card">
+              <div className="why-us-icon">💚</div>
+              <h3>Personlig service</h3>
+              <p>Ingen roboter eller ventelister. Du snakker med ekte mennesker som bryr seg.</p>
             </div>
           </div>
         </div>
@@ -307,49 +277,49 @@ export default function Home() {
         <div className="container">
           <div className="security-content">
             <div className="security-text">
-              <h2>Sikkerhet du kan <span className="gradient-text">stole på</span></h2>
+              <h2>Sikkerhet vi <span className="gradient-text">tar på alvor</span></h2>
               <p>
                 Pasientene dine stoler på deg med sine mest private opplysninger.
-                Vi tar det ansvaret på alvor og sørger for at alt er trygt.
+                Vi bygger systemet med sikkerhet som førsteprioritet.
               </p>
               <ul className="security-list">
                 <li>
                   <span className="check">✓</span>
-                  All data krypteres og lagres sikkert
+                  Kryptering av all sensitiv data
                 </li>
                 <li>
                   <span className="check">✓</span>
-                  Automatisk sikkerhetskopi hver dag
+                  Sikker innlogging
                 </li>
                 <li>
                   <span className="check">✓</span>
-                  Full kontroll over hvem som ser hva
+                  Rollebasert tilgangskontroll
                 </li>
                 <li>
                   <span className="check">✓</span>
-                  Oppfyller alle GDPR-krav
+                  Bygget med GDPR i tankene
                 </li>
                 <li>
                   <span className="check">✓</span>
-                  Data lagres i Norge
+                  Full sporbarhet og logging
                 </li>
               </ul>
             </div>
             <div className="security-badges">
               <div className="security-badge warm-card">
-                <div className="security-badge-icon">🛡️</div>
-                <h4>GDPR</h4>
-                <p>Fullt ut godkjent</p>
+                <div className="security-badge-icon">🔐</div>
+                <h4>Kryptering</h4>
+                <p>AES-256</p>
               </div>
               <div className="security-badge warm-card">
                 <div className="security-badge-icon">📜</div>
-                <h4>Normen</h4>
-                <p>Følger alle krav</p>
+                <h4>GDPR</h4>
+                <p>I fokus</p>
               </div>
               <div className="security-badge warm-card">
-                <div className="security-badge-icon">🇳🇴</div>
-                <h4>Norsk datasenter</h4>
-                <p>Trygg lagring</p>
+                <div className="security-badge-icon">☁️</div>
+                <h4>Azure</h4>
+                <p>Sikker sky</p>
               </div>
               <div className="security-badge warm-card">
                 <div className="security-badge-icon">💚</div>
@@ -365,10 +335,10 @@ export default function Home() {
       <section id="kontakt" className="cta section">
         <div className="container">
           <div className="cta-card">
-            <h2>La oss ta en prat! ☕</h2>
+            <h2>Nysgjerrig? La oss snakke! ☕</h2>
             <p>
-              Vi elsker å snakke med folk som oss — som brenner for god pasientbehandling.
-              Ta kontakt så finner vi ut hvordan vi kan hjelpe akkurat deg.
+              Vi leter etter klinikker som vil være med på reisen fra starten.
+              Ta kontakt så forteller vi mer om hva vi holder på med.
             </p>
             <button onClick={() => openModal("demo")} className="btn">
               Ta kontakt
@@ -390,8 +360,8 @@ export default function Home() {
                 <span>Secure Clinic</span>
               </div>
               <p>
-                Journalsystemet som gjør hverdagen enklere for klinikker over hele Norge.
-                Laget med hjerte for helsepersonell.
+                Vi bygger journalsystemet vi selv skulle ønske fantes.
+                Laget med hjerte i Norge.
               </p>
             </div>
             <div className="footer-links">
@@ -400,23 +370,15 @@ export default function Home() {
                 <ul>
                   <li><a href="#funksjoner">Funksjoner</a></li>
                   <li><a href="#sikkerhet">Sikkerhet</a></li>
-                  <li><a href="#omtaler">Omtaler</a></li>
+                  <li><a href="#hvorfor-oss">Hvorfor oss</a></li>
                 </ul>
               </div>
               <div className="footer-links-column">
-                <h4>Selskap</h4>
+                <h4>Kontakt</h4>
                 <ul>
-                  <li><a href="#kontakt">Kontakt</a></li>
-                  <li><a href="mailto:hei@secureclinic.no">E-post</a></li>
-                  <li><a href="tel:+4712345678">Ring oss</a></li>
-                </ul>
-              </div>
-              <div className="footer-links-column">
-                <h4>Hjelp</h4>
-                <ul>
-                  <li><a href="mailto:support@secureclinic.no">Support</a></li>
-                  <li><a href="#personvern">Personvern</a></li>
-                  <li><a href="#vilkar">Vilkår</a></li>
+                  <li><a href="mailto:hei@secureclinic.no">hei@secureclinic.no</a></li>
+                  <li><button onClick={() => openModal("demo")} className="footer-link-btn">Book en demo</button></li>
+                  <li><button onClick={() => openModal("trial")} className="footer-link-btn">Meld interesse</button></li>
                 </ul>
               </div>
             </div>
@@ -425,7 +387,6 @@ export default function Home() {
             <p>© 2025 Secure Clinic Journal. Laget med 💚 i Norge.</p>
             <div className="footer-bottom-links">
               <a href="mailto:hei@secureclinic.no">hei@secureclinic.no</a>
-              <a href="tel:+4712345678">+47 123 45 678</a>
             </div>
           </div>
         </div>

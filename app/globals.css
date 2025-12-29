@@ -557,26 +557,71 @@ body {
   line-height: 1.7;
 }
 
-/* ===== TESTIMONIALS SECTION ===== */
-.testimonials {
+/* ===== WHY US SECTION ===== */
+.why-us {
   background: var(--color-bg-main);
 }
 
-.testimonials-header {
+.why-us-header {
   text-align: center;
   margin-bottom: 60px;
 }
 
-.testimonials-header h2 {
+.why-us-header h2 {
   font-size: 40px;
   font-weight: 700;
   margin-bottom: 16px;
   color: var(--color-text-primary);
 }
 
-.testimonials-header p {
+.why-us-header p {
   font-size: 18px;
   color: var(--color-text-secondary);
+}
+
+.why-us-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.why-us-card {
+  padding: 36px;
+  text-align: center;
+}
+
+.why-us-icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.why-us-card h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--color-text-primary);
+}
+
+.why-us-card p {
+  color: var(--color-text-secondary);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* Footer link buttons */
+.footer-link-btn {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: 15px;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0;
+  transition: color var(--transition-fast);
+}
+
+.footer-link-btn:hover {
+  color: var(--color-primary);
 }
 
 .testimonials-grid {

@@ -7,113 +7,7 @@ interface Message {
     content: string;
 }
 
-// Product knowledge base - the chatbot only knows about this
-const PRODUCT_KNOWLEDGE = `
-Du er en hjelpsom assistent for Secure Clinic Journal - et journalsystem for estetiske klinikker.
-
-VIKTIG: Du skal KUN svare på spørsmål om Secure Clinic Journal og dets funksjoner. 
-Hvis noen spør om noe annet, si høflig at du kun kan hjelpe med spørsmål om produktet.
-
-PRODUKTINFORMASJON:
-
-Hva er Secure Clinic Journal?
-- Et spesialisert journalsystem bygget for klinikker som driver med injeksjonsbehandlinger
-- Fokus på estetiske klinikker (botox, filler, etc.)
-- Norskutviklet med GDPR i kjernen
-
-Hovedfunksjoner:
-1. Injeksjonskartlegging - Marker nøyaktig hvor injeksjoner settes på et visuelt kart med dose, dybde, produkt og sone
-2. Produktsporing & Batch - Spor hvilke produkter og batchnumre som brukes på hver pasient (viktig for tilbakekalling)
-3. Digital signering - Lås og signer konsultasjoner med kryptografisk hash
-4. Automatisk fakturautkast - Genereres automatisk når konsultasjon signeres
-5. Komplikasjonslogg - Registrer og følg opp komplikasjoner med kobling til behandling
-6. GDPR-eksport - Generer fullstendig pasientdata-eksport (SAR) med ett klikk
-
-Sikkerhet:
-- AES-256-GCM kryptering (envelope encryption)
-- Audit-logg med hash-kjede som ikke kan manipuleres
-- Tenant-isolasjon - klinikker ser aldri hverandres data
-- Rollebasert tilgang (lege, admin, terapeut, resepsjon)
-- Azure-skylagring
-
-Status:
-- Produktet er under utvikling
-- Vi søker tidlige brukere som vil være med å forme produktet
-- Kontakt via demo-skjema på nettsiden
-
-Prising:
-- Ikke fastsatt ennå
-- Tidlige brukere får spesialtilbud
-
-Kontakt:
-- E-post: hei@secureclinic.no
-- Book en demo via skjemaet på nettsiden
-`;
-
-// Simple response generator based on keywords
-function generateResponse(userMessage: string): string {
-    const msg = userMessage.toLowerCase();
-
-    // Off-topic detection
-    const offTopicKeywords = [
-        "vær", "mat", "sport", "politikk", "nyheter", "film", "musikk",
-        "oppskrift", "reise", "fly", "hotell", "bil", "investering",
-        "aksjer", "krypto", "bitcoin", "dating", "forhold", "medisin",
-        "diagnose", "behandling av", "symptomer", "sykdom"
-    ];
-
-    if (offTopicKeywords.some(keyword => msg.includes(keyword))) {
-        return "Jeg er spesialisert på Secure Clinic Journal og kan dessverre ikke hjelpe med det spørsmålet. Er det noe du lurer på om journalsystemet vårt? 😊";
-    }
-
-    // Product-specific responses
-    if (msg.includes("pris") || msg.includes("kost") || msg.includes("betale")) {
-        return "Prisingen er ikke fastsatt ennå siden vi fortsatt er i utviklingsfasen. Tidlige brukere vil få spesialtilbud! Book en demo så kan vi diskutere hva som passer for din klinikk. 💰";
-    }
-
-    if (msg.includes("injeksjon") || msg.includes("kart") || msg.includes("botox") || msg.includes("filler")) {
-        return "Injeksjonskartlegging er en av kjernefunksjonene våre! 💉 Du kan markere nøyaktig hvor du setter injeksjoner på et visuelt ansiktskart, med dose, dybde, produkt og sone. Alt dokumenteres automatisk i journalen.";
-    }
-
-    if (msg.includes("sikker") || msg.includes("krypter") || msg.includes("gdpr") || msg.includes("personvern")) {
-        return "Sikkerhet er bygget inn fra bunnen! 🔒 Vi bruker AES-256-GCM envelope encryption, audit-logger med hash-kjede som ikke kan manipuleres, og full tenant-isolasjon mellom klinikker. GDPR-verktøy som SAR-eksport og anonymisering er innebygd.";
-    }
-
-    if (msg.includes("batch") || msg.includes("produkt") || msg.includes("spor")) {
-        return "Produktsporing er viktig for estetiske klinikker! 📦 Du kan registrere batchnummer for hvert produkt som brukes, noe som er kritisk ved eventuelle tilbakekallinger eller komplikasjonsoppfølging.";
-    }
-
-    if (msg.includes("faktura") || msg.includes("betaling") || msg.includes("økonomi")) {
-        return "Når en konsultasjon signeres, genereres et fakturautkast automatisk basert på behandlingen som er utført. 💰 Du slipper å føre alt manuelt!";
-    }
-
-    if (msg.includes("demo") || msg.includes("prøve") || msg.includes("test")) {
-        return "Vil du se produktet i aksjon? 🎯 Klikk på 'Book en demo' knappen øverst på siden, så tar vi kontakt for å avtale en uforpliktende gjennomgang!";
-    }
-
-    if (msg.includes("kontakt") || msg.includes("epost") || msg.includes("telefon")) {
-        return "Du kan nå oss på hei@secureclinic.no 📧 eller bruke demo-skjemaet på nettsiden. Vi svarer vanligvis innen én virkedag!";
-    }
-
-    if (msg.includes("komplikasjon")) {
-        return "Komplikasjonslogging lar deg registrere og følge opp uønskede hendelser ⚠️ med direkte kobling til den opprinnelige behandlingen og relevante bilder. Viktig for både pasientoppfølging og kvalitetssikring.";
-    }
-
-    if (msg.includes("hei") || msg.includes("hallo") || msg.includes("heisann")) {
-        return "Hei! 👋 Jeg er her for å svare på spørsmål om Secure Clinic Journal. Hva lurer du på?";
-    }
-
-    if (msg.includes("hvem") || msg.includes("hva er")) {
-        return "Secure Clinic Journal er et spesialisert journalsystem bygget for estetiske klinikker som driver med injeksjonsbehandlinger. 💉 Vi fokuserer på injeksjonskartlegging, produktsporing, GDPR-compliance og automatisk fakturering. Hva vil du vite mer om?";
-    }
-
-    if (msg.includes("takk")) {
-        return "Bare hyggelig! 😊 Er det noe mer du lurer på om Secure Clinic Journal?";
-    }
-
-    // Default response
-    return "Bra spørsmål! Secure Clinic Journal er bygget spesielt for estetiske klinikker med injeksjonsbehandlinger. Vi har injeksjonskartlegging, produktsporing, digital signering, og innebygd GDPR. Er det noe spesifikt du vil vite mer om? 🎯";
-}
+// Product knowledge is now handled server-side via system instructions
 
 export default function ChatBot() {
     const [isOpen, setIsOpen] = useState(false);
@@ -143,17 +37,43 @@ export default function ChatBot() {
         setInput("");
 
         // Add user message
-        setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
+        const newMessages = [...messages, { role: "user", content: userMessage } as Message];
+        setMessages(newMessages);
 
-        // Simulate typing
         setIsTyping(true);
 
-        // Simulate response delay
-        setTimeout(() => {
-            const response = generateResponse(userMessage);
-            setMessages((prev) => [...prev, { role: "assistant", content: response }]);
+        try {
+            // Prepare history for API (map 'assistant' to 'model')
+            const history = messages.map(msg => ({
+                role: msg.role === "assistant" ? "model" : "user",
+                parts: [{ text: msg.content }]
+            }));
+
+            const response = await fetch("/api/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    message: userMessage,
+                    history: history
+                }),
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            setMessages((prev) => [...prev, { role: "assistant", content: data.response }]);
+        } catch (error) {
+            console.error("Chat error:", error);
+            setMessages((prev) => [...prev, {
+                role: "assistant",
+                content: "Beklager, jeg opplevde en feil. Vennligst prøv igjen senere."
+            }]);
+        } finally {
             setIsTyping(false);
-        }, 800 + Math.random() * 700);
+        }
     };
 
     return (

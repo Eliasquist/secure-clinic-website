@@ -44,7 +44,8 @@ export default function ChatBot() {
 
         try {
             // Prepare history for API (map 'assistant' to 'model')
-            const history = messages.map(msg => ({
+            // INFO: We slice(1) to remove the initial "Hi" greeting, because Gemini history must start with a USER message.
+            const history = messages.slice(1).map(msg => ({
                 role: msg.role === "assistant" ? "model" : "user",
                 parts: [{ text: msg.content }]
             }));

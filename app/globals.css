@@ -576,27 +576,37 @@ body {
   background: var(--color-primary-light);
   border-radius: 16px;
   margin-bottom: 20px;
-  font-size: 28px;
+  color: var(--color-primary);
+}
+
+.feature-icon svg {
+  width: 32px;
+  height: 32px;
 }
 
 .feature-card:nth-child(2) .feature-icon {
   background: var(--color-secondary-light);
+  color: var(--color-secondary);
 }
 
 .feature-card:nth-child(3) .feature-icon {
   background: var(--color-accent-light);
+  color: var(--color-accent);
 }
 
 .feature-card:nth-child(4) .feature-icon {
   background: var(--color-primary-light);
+  color: var(--color-primary);
 }
 
 .feature-card:nth-child(5) .feature-icon {
   background: var(--color-secondary-light);
+  color: var(--color-secondary);
 }
 
 .feature-card:nth-child(6) .feature-icon {
   background: var(--color-accent-light);
+  color: var(--color-accent);
 }
 
 .feature-card h3 {
@@ -646,8 +656,30 @@ body {
 }
 
 .why-us-icon {
-  font-size: 48px;
-  margin-bottom: 20px;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary-light);
+  border-radius: 50%;
+  color: var(--color-primary);
+}
+
+.why-us-icon svg {
+  width: 40px;
+  height: 40px;
+}
+
+.why-us-card:nth-child(2) .why-us-icon {
+  background: var(--color-secondary-light);
+  color: var(--color-secondary);
+}
+
+.why-us-card:nth-child(3) .why-us-icon {
+  background: var(--color-accent-light);
+  color: var(--color-accent);
 }
 
 .why-us-card h3 {
@@ -808,8 +840,35 @@ body {
 }
 
 .security-badge-icon {
-  font-size: 36px;
-  margin-bottom: 12px;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary-light);
+  border-radius: 50%;
+  color: var(--color-primary);
+}
+
+.security-badge-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.security-badge:nth-child(2) .security-badge-icon {
+  background: var(--color-secondary-light);
+  color: var(--color-secondary);
+}
+
+.security-badge:nth-child(3) .security-badge-icon {
+  background: var(--color-accent-light);
+  color: var(--color-accent);
+}
+
+.security-badge:nth-child(4) .security-badge-icon {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
 }
 
 .security-badge h4 {

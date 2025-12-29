@@ -2,6 +2,21 @@
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import {
+  SyringeIcon,
+  PackageIcon,
+  SignatureIcon,
+  InvoiceIcon,
+  AlertIcon,
+  ExportIcon,
+  TargetIcon,
+  ShieldIcon,
+  HandshakeIcon,
+  LockIcon,
+  DocumentIcon,
+  LinkIcon,
+  CloudIcon,
+} from "./icons";
 
 const heroImages = [
   { src: "/injection-treatment.png", alt: "Profesjonell injeksjonsbehandling" },
@@ -246,32 +261,32 @@ export default function Home() {
           </div>
           <div className="features-grid">
             <div className="feature-card warm-card">
-              <div className="feature-icon">💉</div>
+              <div className="feature-icon"><SyringeIcon /></div>
               <h3>Injeksjonskartlegging</h3>
               <p>Marker nøyaktig hvor du setter injeksjoner på et visuelt kart. Dose, dybde, produkt og sone — alt dokumentert automatisk.</p>
             </div>
             <div className="feature-card warm-card">
-              <div className="feature-icon">📦</div>
+              <div className="feature-icon"><PackageIcon /></div>
               <h3>Produktsporing & Batch</h3>
               <p>Spor hvilke produkter og batchnumre som brukes på hver pasient. Viktig for tilbakekalling og komplikasjonsoppfølging.</p>
             </div>
             <div className="feature-card warm-card">
-              <div className="feature-icon">✍️</div>
+              <div className="feature-icon"><SignatureIcon /></div>
               <h3>Digital signering</h3>
               <p>Lås og signer konsultasjoner med kryptografisk hash. Dokumentet kan ikke endres i ettertid uten at det vises.</p>
             </div>
             <div className="feature-card warm-card">
-              <div className="feature-icon">💰</div>
+              <div className="feature-icon"><InvoiceIcon /></div>
               <h3>Automatisk fakturautkast</h3>
               <p>Når en konsultasjon signeres, genereres et fakturautkast automatisk basert på behandlingen.</p>
             </div>
             <div className="feature-card warm-card">
-              <div className="feature-icon">⚠️</div>
+              <div className="feature-icon"><AlertIcon /></div>
               <h3>Komplikasjonslogg</h3>
               <p>Registrer og følg opp komplikasjoner med kobling til opprinnelig behandling og bilder.</p>
             </div>
             <div className="feature-card warm-card">
-              <div className="feature-icon">📤</div>
+              <div className="feature-icon"><ExportIcon /></div>
               <h3>GDPR-eksport</h3>
               <p>Generer fullstendig pasientdata-eksport med ett klikk. Perfekt for innsynsforespørsler (SAR).</p>
             </div>
@@ -288,17 +303,17 @@ export default function Home() {
           </div>
           <div className="why-us-grid">
             <div className="why-us-card warm-card">
-              <div className="why-us-icon">🎯</div>
+              <div className="why-us-icon"><TargetIcon /></div>
               <h3>Spesialisert</h3>
               <p>Ikke et generisk system tilpasset alt. Bygget fra bunnen for injeksjonsbehandlinger og estetiske klinikker.</p>
             </div>
             <div className="why-us-card warm-card">
-              <div className="why-us-icon">🛡️</div>
+              <div className="why-us-icon"><ShieldIcon /></div>
               <h3>Sikkerhet først</h3>
               <p>AES-256 kryptering, envelope encryption, og full audit-logg med hash-kjede som ikke kan manipuleres.</p>
             </div>
             <div className="why-us-card warm-card">
-              <div className="why-us-icon">🤝</div>
+              <div className="why-us-icon"><HandshakeIcon /></div>
               <h3>Tett samarbeid</h3>
               <p>Som tidlig bruker får du direkte kontakt med utviklerne. Din feedback former produktet.</p>
             </div>
@@ -341,22 +356,22 @@ export default function Home() {
             </div>
             <div className="security-badges">
               <div className="security-badge warm-card">
-                <div className="security-badge-icon">🔐</div>
+                <div className="security-badge-icon"><LockIcon /></div>
                 <h4>AES-256-GCM</h4>
                 <p>Autentisert kryptering</p>
               </div>
               <div className="security-badge warm-card">
-                <div className="security-badge-icon">📜</div>
+                <div className="security-badge-icon"><DocumentIcon /></div>
                 <h4>GDPR</h4>
                 <p>Bygget inn fra start</p>
               </div>
               <div className="security-badge warm-card">
-                <div className="security-badge-icon">🔗</div>
+                <div className="security-badge-icon"><LinkIcon /></div>
                 <h4>Hash-kjede</h4>
                 <p>Manipulasjonssikker logg</p>
               </div>
               <div className="security-badge warm-card">
-                <div className="security-badge-icon">☁️</div>
+                <div className="security-badge-icon"><CloudIcon /></div>
                 <h4>Azure</h4>
                 <p>Enterprise sky</p>
               </div>

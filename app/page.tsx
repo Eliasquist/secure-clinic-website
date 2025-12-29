@@ -1,11 +1,18 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+const heroImages = [
+  { src: "/clinic-treatment.png", alt: "Estetisk klinikk behandlingsrom" },
+  { src: "/hero-doctor.png", alt: "Helsepersonell som bruker Secure Clinic" },
+  { src: "/happy-patient.png", alt: "Fornøyd pasient etter behandling" },
+];
 
 export default function Home() {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<"demo" | "trial">("demo");
+  const [currentImage, setCurrentImage] = useState(0);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -14,6 +21,14 @@ export default function Home() {
     message: ""
   });
   const [submitted, setSubmitted] = useState(false);
+
+  // Auto-rotate images every 4 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImage((prev) => (prev + 1) % heroImages.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   const openModal = (type: "demo" | "trial") => {
     setModalType(type);
@@ -191,13 +206,32 @@ export default function Home() {
             </div>
           </div>
           <div className="hero-image">
-            <Image
-              src="/clinic-treatment.png"
-              alt="Estetisk klinikk behandlingsrom"
-              width={600}
-              height={600}
-              priority
-            />
+            <div className="hero-carousel">
+              {heroImages.map((img, index) => (
+                <div
+                  key={img.src}
+                  className={`hero-carousel-slide ${index === currentImage ? 'active' : ''}`}
+                >
+                  <Image
+                    src={img.src}
+                    alt={img.alt}
+                    width={600}
+                    height={600}
+                    priority={index === 0}
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="hero-carousel-dots">
+              {heroImages.map((_, index) => (
+                <button
+                  key={index}
+                  className={`hero-carousel-dot ${index === currentImage ? 'active' : ''}`}
+                  onClick={() => setCurrentImage(index)}
+                  aria-label={`Gå til bilde ${index + 1}`}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </section>

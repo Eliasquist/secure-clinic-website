@@ -192,8 +192,8 @@ export default function Home() {
           </div>
           <div className="hero-image">
             <Image
-              src="/hero-doctor.png"
-              alt="Helsepersonell som bruker Secure Clinic"
+              src="/clinic-treatment.png"
+              alt="Estetisk klinikk behandlingsrom"
               width={600}
               height={600}
               priority

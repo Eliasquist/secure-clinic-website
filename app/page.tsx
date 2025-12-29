@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 
 const heroImages = [
+  { src: "/injection-treatment.png", alt: "Profesjonell injeksjonsbehandling" },
   { src: "/clinic-treatment.png", alt: "Estetisk klinikk behandlingsrom" },
   { src: "/hero-doctor.png", alt: "Helsepersonell som bruker Secure Clinic" },
   { src: "/happy-patient.png", alt: "Fornøyd pasient etter behandling" },

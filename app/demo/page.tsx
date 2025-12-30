@@ -3,14 +3,275 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
-import {
-    SyringeIcon,
-    PackageIcon,
-    SignatureIcon,
-    InvoiceIcon,
-    ShieldIcon,
-    LockIcon,
-} from '../icons';
+import { ANATOMY_ZONES } from './anatomy';
+
+// --- Inline Icons ---
+const SignatureIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M16 3l5 5L8 21H3v-5L16 3z" />
+        <path d="M21 21H3" />
+    </svg>
+);
+
+const CalendarIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+        <line x1="16" y1="2" x2="16" y2="6" />
+        <line x1="8" y1="2" x2="8" y2="6" />
+        <line x1="3" y1="10" x2="21" y2="10" />
+    </svg>
+);
+
+const SyringeIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M18 6L6 18" />
+        <path d="M21 3L18 6" />
+        <path d="M18 6L21 9" />
+        <path d="M3 21L6 18" />
+        <path d="M9 15L12 12" />
+        <path d="M6 18L9 21" />
+    </svg>
+);
+
+const InvoiceIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="5" width="20" height="14" rx="2" />
+        <line x1="2" y1="10" x2="22" y2="10" />
+    </svg>
+);
+
+// --- Replica Components ---
+
+// FaceMap Replica
+const FaceMapReplica = ({ activeZone, onZoneClick }: { activeZone: string | null; onZoneClick: (zoneId: string) => void }) => {
+    const [hoveredZone, setHoveredZone] = useState<string | null>(null);
+
+    const opacityForZone = (zoneId: string) => {
+        if (activeZone === zoneId) return 0.6;
+        return hoveredZone === zoneId ? 0.4 : 0.2;
+    };
+
+    const colorForZone = (type: string) => {
+        return type === 'MUSCLE' ? '#ef4444' : '#3b82f6';
+    };
+
+    return (
+        <div className="relative w-full max-w-[300px] mx-auto">
+            <svg
+                viewBox="0 0 100 160"
+                className="da-facemap-svg"
+            >
+                {/* Base Face */}
+                <path
+                    d="M50 10 C 20 10 5 40 5 70 C 5 120 30 150 50 150 C 70 150 95 120 95 70 C 95 40 80 10 50 10 Z"
+                    fill="#f3f4f6"
+                    stroke="#d1d5db"
+                    strokeWidth="0.5"
+                />
+
+                {/* Anatomy Zones */}
+                {ANATOMY_ZONES.map(zone => (
+                    <path
+                        key={zone.id}
+                        d={zone.path}
+                        fill={colorForZone(zone.type)}
+                        fillOpacity={opacityForZone(zone.id)}
+                        stroke={colorForZone(zone.type)}
+                        strokeWidth="0.2"
+                        className="da-facemap-zone"
+                        onMouseEnter={() => setHoveredZone(zone.id)}
+                        onMouseLeave={() => setHoveredZone(null)}
+                        onClick={() => onZoneClick(zone.id)}
+                    >
+                        <title>{zone.name}</title>
+                    </path>
+                ))}
+
+                {/* Default Points (Demo) */}
+                <circle cx="50" cy="60" r="2" fill="#ef4444" className="da-facemap-point" />
+                <circle cx="42" cy="65" r="2" fill="#ef4444" className="da-facemap-point" />
+                <circle cx="58" cy="65" r="2" fill="#ef4444" className="da-facemap-point" />
+            </svg>
+            <div className="absolute top-2 right-2 bg-white/90 p-1.5 rounded text-[10px] text-gray-500 shadow border border-gray-200 pointer-events-none">
+                {hoveredZone ? ANATOMY_ZONES.find(z => z.id === hoveredZone)?.name : 'Klikk på en sone'}
+            </div>
+        </div>
+    );
+};
+
+// Journal Replica
+const JournalReplica = () => {
+    const [selectedZone, setSelectedZone] = useState<string | null>(null);
+
+    return (
+        <div className="da-journal-grid">
+            {/* Left: Map */}
+            <div className="da-journal-left">
+                <div className="flex gap-2 mb-4 text-xs w-full justify-center">
+                    <span className="px-2 py-1 rounded bg-gray-800 text-white">Alle</span>
+                    <span className="px-2 py-1 rounded bg-red-100 text-red-800">Muskler</span>
+                    <span className="px-2 py-1 rounded bg-blue-100 text-blue-800">Volum</span>
+                </div>
+                <FaceMapReplica activeZone={selectedZone} onZoneClick={setSelectedZone} />
+            </div>
+
+            {/* Right: Details */}
+            <div className="da-journal-right">
+                <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
+                    <div>
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Status</span>
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-50 text-yellow-800 border border-yellow-200">
+                            Utkast under arbeid
+                        </span>
+                    </div>
+                </div>
+
+                <div className="da-input-group">
+                    <label className="da-section-title block">1. Anamnese & Vurdering</label>
+                    <textarea
+                        className="da-textarea"
+                        defaultValue="Pasienten ønsker å behandle 'sinnarynken' (glabella). Ingen kontraindikasjoner."
+                    />
+                </div>
+
+                <div className="da-input-group">
+                    <label className="da-section-title block">2. Behandling</label>
+                    <table className="da-table">
+                        <thead>
+                            <tr>
+                                <th>Produkt</th>
+                                <th>Dose</th>
+                                <th>Sone</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Botox</td>
+                                <td>20 Units</td>
+                                <td>Glabella</td>
+                            </tr>
+                            <tr>
+                                <td>Botox</td>
+                                <td>10 Units</td>
+                                <td>Frontalis</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <button className="da-sign-btn">
+                    <SignatureIcon /> Signer & Lås Journal
+                </button>
+            </div>
+        </div>
+    );
+};
+
+// Booking Replica
+const BookingReplica = () => {
+    return (
+        <div className="da-booking-list">
+            <div className="da-booking-item">
+                <div className="flex gap-4">
+                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                        AL
+                    </div>
+                    <div>
+                        <div className="font-semibold text-gray-900">Anna Larsen</div>
+                        <div className="text-sm text-gray-500">Botox (3 områder) • 45 min</div>
+                        <div className="text-xs text-gray-400 mt-1">Koblet til pasientjournal ✓</div>
+                    </div>
+                </div>
+                <div className="text-right">
+                    <div className="font-medium text-gray-900">09:00</div>
+                    <span className="da-booking-status da-status-confirmed">Bekreftet</span>
+                </div>
+            </div>
+
+            <div className="da-booking-item">
+                <div className="flex gap-4">
+                    <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold">
+                        EJ
+                    </div>
+                    <div>
+                        <div className="font-semibold text-gray-900">Erik Johansen</div>
+                        <div className="text-sm text-gray-500">Filler (Lepper 1ml) • 45 min</div>
+                        <div className="text-xs text-gray-400 mt-1">Ny pasient</div>
+                    </div>
+                </div>
+                <div className="text-right">
+                    <div className="font-medium text-gray-900">10:30</div>
+                    <span className="da-booking-status da-status-pending">Ventende</span>
+                </div>
+            </div>
+
+            <div className="da-booking-item">
+                <div className="flex gap-4">
+                    <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold">
+                        KO
+                    </div>
+                    <div>
+                        <div className="font-semibold text-gray-900">Kari Olsen</div>
+                        <div className="text-sm text-gray-500">Konsultasjon • 30 min</div>
+                    </div>
+                </div>
+                <div className="text-right">
+                    <div className="font-medium text-gray-900">14:00</div>
+                    <span className="da-booking-status da-status-confirmed">Bekreftet</span>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Invoice Replica
+const InvoiceReplica = () => (
+    <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+        <div className="flex justify-between items-center mb-8">
+            <div>
+                <h3 className="text-2xl font-bold text-gray-900">Faktura #2024-0042</h3>
+                <span className="inline-block mt-1 px-2 py-1 bg-gray-100 text-gray-600 text-xs font-semibold rounded">UTKAST</span>
+            </div>
+            <div className="text-right">
+                <div className="text-sm text-gray-500">Dato</div>
+                <div className="font-medium">30.12.2024</div>
+            </div>
+        </div>
+
+        <table className="da-table mb-8">
+            <thead>
+                <tr>
+                    <th>Beskrivelse</th>
+                    <th className="text-right">Beløp</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Botox (3 områder)</td>
+                    <td className="text-right">4 500 kr</td>
+                </tr>
+                <tr>
+                    <td>Konsultasjon</td>
+                    <td className="text-right">800 kr</td>
+                </tr>
+                <tr className="border-t-2 border-gray-200 font-bold">
+                    <td className="pt-4">Totalt å betale</td>
+                    <td className="text-right pt-4">5 300 kr</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div className="flex justify-end gap-3">
+            <button className="px-4 py-2 border border-gray-300 rounded text-sm font-medium hover:bg-gray-50">
+                Rediger
+            </button>
+            <button className="px-4 py-2 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700">
+                Send til pasient
+            </button>
+        </div>
+    </div>
+);
+
 
 export default function DemoPage() {
     const [activeFeature, setActiveFeature] = useState(0);
@@ -18,27 +279,24 @@ export default function DemoPage() {
     const features = [
         {
             id: 'booking',
-            title: 'Online Booking',
-            description: 'Pasienter booker selv timer online. Du får automatisk bekreftelse og påminnelser.',
-            icon: '📅',
+            title: 'Bookinger',
+            description: 'Full oversikt over timeboken din. Synkronisert i sanntid.',
+            icon: <CalendarIcon />,
+            component: <BookingReplica />
         },
         {
             id: 'journal',
-            title: 'Journalføring',
-            description: 'Strukturert journalføring med injeksjonskartlegging, produktbruk og automatisk signering.',
-            icon: '📋',
-        },
-        {
-            id: 'injection',
-            title: 'Injeksjonskart',
-            description: 'Marker nøyaktig hvor injeksjoner settes. Dose, dybde og produkt dokumenteres.',
-            icon: '💉',
+            title: 'Journal & Injeksjonskart',
+            description: 'Dokumenter behandlinger visuelt. Klikk rett i ansiktet for å logge injeksjoner.',
+            icon: <SyringeIcon />,
+            component: <JournalReplica />
         },
         {
             id: 'invoice',
-            title: 'Fakturaer',
-            description: 'Automatisk fakturautkast genereres når konsultasjon signeres.',
-            icon: '💰',
+            title: 'Faktura',
+            description: 'Lag fakturaer automatisk basert på journalføringen.',
+            icon: <InvoiceIcon />,
+            component: <InvoiceReplica />
         },
     ];
 
@@ -71,12 +329,11 @@ export default function DemoPage() {
                             Live Demo
                         </div>
                         <h1>
-                            Se hvordan <span className="gradient-text">Secure Clinic</span> fungerer
+                            Opplev <span className="gradient-text">Secure Clinic</span>
                         </h1>
                         <p>
-                            Utforsk vårt komplette system for estetiske klinikker.
-                            Prøv booking-systemet selv, eller se hvordan desktop-appen
-                            håndterer pasientjournal og injeksjonskartlegging.
+                            Utforsk hvordan desktop-appen og booking-systemet jobber sammen
+                            for en sømløs klinikkhverdag.
                         </p>
                     </div>
                 </div>
@@ -86,11 +343,10 @@ export default function DemoPage() {
             <section className="demo-section">
                 <div className="container">
                     <div className="demo-section-header">
-                        <span className="section-badge">🎯 Prøv selv</span>
-                        <h2>Live Booking-demo</h2>
+                        <span className="section-badge">🎯 For pasienten</span>
+                        <h2>Online Booking</h2>
                         <p>
-                            Dette er et ekte booking-system som kjører i produksjon.
-                            Prøv å booke en time hos vår demo-klinikk!
+                            Dette er hva pasienten ser. Prøv å booke en time!
                         </p>
                     </div>
 
@@ -105,321 +361,89 @@ export default function DemoPage() {
                                     />
                                 </div>
                             </div>
-                            <div className="device-label">
-                                <span>📍</span> Oslo Klinikk - Demo
-                            </div>
                         </div>
 
                         <div className="demo-booking-info">
-                            <h3>Slik fungerer booking</h3>
-                            <div className="booking-steps">
-                                <div className="booking-step-item">
-                                    <div className="step-num">1</div>
-                                    <div>
-                                        <h4>Velg behandling</h4>
-                                        <p>Pasienten ser tilgjengelige tjenester med priser og varighet</p>
-                                    </div>
+                            <h3>Integrasjon</h3>
+                            <div className="integration-grid" style={{ marginTop: '20px', gap: '16px', gridTemplateColumns: '1fr' }}>
+                                <div className="integration-card" style={{ padding: '20px' }}>
+                                    <h3 style={{ fontSize: '16px' }}>Direkte Lenke</h3>
+                                    <code style={{ fontSize: '12px', display: 'block', background: '#1e293b', padding: '10px', borderRadius: '6px', color: '#e2e8f0' }}>
+                                        https://secure-clinic.com/book/din-klinikk
+                                    </code>
                                 </div>
-                                <div className="booking-step-item">
-                                    <div className="step-num">2</div>
-                                    <div>
-                                        <h4>Velg tid</h4>
-                                        <p>Kun ledige tider vises basert på behandlers kalender</p>
-                                    </div>
+                                <div className="integration-card" style={{ padding: '20px' }}>
+                                    <h3 style={{ fontSize: '16px' }}>Iframe Widget</h3>
+                                    <code style={{ fontSize: '12px', display: 'block', background: '#1e293b', padding: '10px', borderRadius: '6px', color: '#e2e8f0' }}>
+                                        &lt;iframe src="..." /&gt;
+                                    </code>
                                 </div>
-                                <div className="booking-step-item">
-                                    <div className="step-num">3</div>
-                                    <div>
-                                        <h4>Bekreft med e-post</h4>
-                                        <p>Pasient mottar OTP-kode for verifisering</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <Link href="/book/oslo-clinic" className="btn btn-primary" target="_blank">
-                                Åpne booking i ny fane
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                    <path d="M6 3h7v7M13 3L6 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* SaaS Integration Section */}
-            <section className="demo-section demo-integration">
-                <div className="container">
-                    <div className="demo-section-header">
-                        <span className="section-badge">🔌 Integrasjon</span>
-                        <h2>Enkel integrasjon på deres nettside</h2>
-                        <p>Dere velger selv hvordan booking-systemet skal vises for pasienten</p>
-                    </div>
-
-                    <div className="integration-grid">
-                        <div className="integration-card">
-                            <h3>1. Direkte lenke</h3>
-                            <p>Legg til en knapp på nettsiden deres som åpner booking i et eget, optimalisert vindu.</p>
-                            <div className="code-block">
-                                <code>
-                                    &lt;a href="https://secure-clinic.com/book/din-klinikk"&gt;
-                                    Bestill time
-                                    &lt;/a&gt;
-                                </code>
-                            </div>
-                        </div>
-                        <div className="integration-card">
-                            <h3>2. Innebygd Widget (Iframe)</h3>
-                            <p>Vis booking-skjemaet direkte inne på deres egen side. Kunden forlater aldri nettsiden.</p>
-                            <div className="code-block">
-                                <code>
-                                    &lt;iframe
-                                    src="https://secure-clinic.com/book/din-klinikk"
-                                    width="100%" height="700" ...
-                                    &gt;&lt;/iframe&gt;
-                                </code>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* Desktop App Section */}
-            <section className="demo-section demo-app-section">
+            {/* Desktop App Replica Section */}
+            <section className="demo-section demo-app-section" style={{ background: '#fff' }}>
                 <div className="container">
                     <div className="demo-section-header">
-                        <span className="section-badge">🖥️ Desktop App</span>
-                        <h2>Journalsystemet</h2>
+                        <span className="section-badge">🖥️ For behandleren</span>
+                        <h2>Secure Clinic Desktop</h2>
                         <p>
-                            Den virkelige magien skjer i desktop-appen. Her håndterer du
-                            pasientjournal, injeksjonskartlegging, produktsporing og faktura.
+                            Slik ser arbeidsverktøyet ditt ut. Dette er en eksakt kopi av applikasjonen.
                         </p>
                     </div>
 
-                    <div className="app-features-tabs">
-                        <div className="features-tab-list">
+                    <div className="desktop-app-replica shadow-2xl border border-gray-200">
+                        {/* Sidebar */}
+                        <div className="da-sidebar">
+                            <div className="mb-6 px-2 font-bold text-gray-900 flex items-center gap-2">
+                                <Image src="/logo.png" width={24} height={24} alt="Logo" />
+                                Secure Clinic
+                            </div>
+
                             {features.map((feature, index) => (
-                                <button
+                                <div
                                     key={feature.id}
-                                    className={`feature-tab ${activeFeature === index ? 'active' : ''}`}
+                                    className={`da-sidebar-item ${activeFeature === index ? 'active' : ''}`}
                                     onClick={() => setActiveFeature(index)}
                                 >
-                                    <span className="tab-icon">{feature.icon}</span>
-                                    <span className="tab-title">{feature.title}</span>
-                                </button>
-                            ))}
-                        </div>
-
-                        <div className="features-tab-content">
-                            <div className="feature-display">
-                                <div className="feature-text">
-                                    <h3>{features[activeFeature].title}</h3>
-                                    <p>{features[activeFeature].description}</p>
-
-                                    {activeFeature === 0 && (
-                                        <ul className="feature-list">
-                                            <li>✓ Integrert med nettside-booking</li>
-                                            <li>✓ Automatiske SMS/e-post påminnelser</li>
-                                            <li>✓ Kalender-synkronisering</li>
-                                            <li>✓ Overbookings-beskyttelse</li>
-                                        </ul>
-                                    )}
-                                    {activeFeature === 1 && (
-                                        <ul className="feature-list">
-                                            <li>✓ Strukturerte konsultasjonsmaler</li>
-                                            <li>✓ Automatisk signering med hash</li>
-                                            <li>✓ Endringslogg for alle felt</li>
-                                            <li>✓ GDPR-kompatibel eksport</li>
-                                        </ul>
-                                    )}
-                                    {activeFeature === 2 && (
-                                        <ul className="feature-list">
-                                            <li>✓ Visuelt injeksjonskart</li>
-                                            <li>✓ Dose, dybde og produkt per punkt</li>
-                                            <li>✓ Batchnummer-sporing</li>
-                                            <li>✓ Historikk fra tidligere behandlinger</li>
-                                        </ul>
-                                    )}
-                                    {activeFeature === 3 && (
-                                        <ul className="feature-list">
-                                            <li>✓ Faktura genereres automatisk</li>
-                                            <li>✓ Redigerbart før sending</li>
-                                            <li>✓ MVA-håndtering</li>
-                                            <li>✓ Eksport til regnskapssystem</li>
-                                        </ul>
-                                    )}
+                                    <span>{feature.icon}</span>
+                                    {feature.title}
                                 </div>
+                            ))}
 
-                                <div className="feature-preview">
-                                    <div className="app-mockup">
-                                        <div className="mockup-header">
-                                            <div className="mockup-dots">
-                                                <span></span><span></span><span></span>
-                                            </div>
-                                            <span className="mockup-title">Secure Clinic Desktop</span>
-                                        </div>
-                                        <div className="mockup-content">
-                                            {activeFeature === 0 && (
-                                                <div className="mockup-booking">
-                                                    <div className="mockup-sidebar">
-                                                        <div className="sidebar-item active">📅 Bookinger</div>
-                                                        <div className="sidebar-item">👥 Pasienter</div>
-                                                        <div className="sidebar-item">📋 Journal</div>
-                                                        <div className="sidebar-item">💰 Faktura</div>
-                                                    </div>
-                                                    <div className="mockup-main">
-                                                        <h4>Dagens bookinger</h4>
-                                                        <div className="booking-list">
-                                                            <div className="booking-item confirmed">
-                                                                <span className="time">09:00</span>
-                                                                <span className="patient">Anna Larsen</span>
-                                                                <span className="service">Botox</span>
-                                                            </div>
-                                                            <div className="booking-item pending">
-                                                                <span className="time">10:30</span>
-                                                                <span className="patient">Erik Johansen</span>
-                                                                <span className="service">Filler</span>
-                                                            </div>
-                                                            <div className="booking-item confirmed">
-                                                                <span className="time">14:00</span>
-                                                                <span className="patient">Kari Olsen</span>
-                                                                <span className="service">Konsultasjon</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
-                                            {activeFeature === 1 && (
-                                                <div className="mockup-journal">
-                                                    <div className="journal-header">
-                                                        <span>Pasient: Anna Larsen</span>
-                                                        <span className="status signed">✓ Signert</span>
-                                                    </div>
-                                                    <div className="journal-sections">
-                                                        <div className="journal-section">
-                                                            <h5>Anamnese</h5>
-                                                            <p>Ønsker behandling av glabellalinjer...</p>
-                                                        </div>
-                                                        <div className="journal-section">
-                                                            <h5>Behandling</h5>
-                                                            <p>Botox 20 enheter, fordelt på 5 punkter</p>
-                                                        </div>
-                                                        <div className="journal-section">
-                                                            <h5>Produkter</h5>
-                                                            <div className="product-tag">Botox (Batch: A123456)</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
-                                            {activeFeature === 2 && (
-                                                <div className="mockup-injection">
-                                                    <div className="face-outline">
-                                                        <div className="injection-point" style={{ top: '30%', left: '35%' }}>•</div>
-                                                        <div className="injection-point" style={{ top: '30%', left: '50%' }}>•</div>
-                                                        <div className="injection-point" style={{ top: '30%', left: '65%' }}>•</div>
-                                                        <div className="injection-point large" style={{ top: '45%', left: '25%' }}>•</div>
-                                                        <div className="injection-point large" style={{ top: '45%', left: '75%' }}>•</div>
-                                                        <div className="face-text">👤</div>
-                                                    </div>
-                                                    <div className="injection-details">
-                                                        <div className="injection-stat">
-                                                            <span>Punkter:</span> 5
-                                                        </div>
-                                                        <div className="injection-stat">
-                                                            <span>Total dose:</span> 24 enh
-                                                        </div>
-                                                        <div className="injection-stat">
-                                                            <span>Produkt:</span> Botox
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
-                                            {activeFeature === 3 && (
-                                                <div className="mockup-invoice">
-                                                    <div className="invoice-header">
-                                                        <span>Faktura #2024-0042</span>
-                                                        <span className="draft-badge">Utkast</span>
-                                                    </div>
-                                                    <div className="invoice-lines">
-                                                        <div className="invoice-line">
-                                                            <span>Botox behandling</span>
-                                                            <span>kr 4.500</span>
-                                                        </div>
-                                                        <div className="invoice-line">
-                                                            <span>Konsultasjon</span>
-                                                            <span>kr 800</span>
-                                                        </div>
-                                                        <div className="invoice-line total">
-                                                            <span>Totalt</span>
-                                                            <span>kr 5.300</span>
-                                                        </div>
-                                                    </div>
-                                                    <div className="invoice-actions">
-                                                        <button>Rediger</button>
-                                                        <button className="primary">Send faktura</button>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
+                            <div className="mt-auto pt-4 border-t border-gray-100">
+                                <div className="da-sidebar-item text-red-600 hover:bg-red-50">
+                                    <span>🚪</span> Logg ut
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </section>
 
-            {/* Security Highlights */}
-            <section className="demo-section demo-security">
-                <div className="container">
-                    <div className="demo-section-header">
-                        <span className="section-badge">🔒 Sikkerhet</span>
-                        <h2>Bygget med sikkerhet i kjernen</h2>
-                        <p>Alt du ser her er beskyttet med enterprise-grade sikkerhet</p>
-                    </div>
+                        {/* Main Content */}
+                        <div className="da-main">
+                            {/* Header */}
+                            <div className="da-header">
+                                <h2>{features[activeFeature].title}</h2>
+                                <div className="flex items-center gap-4">
+                                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold">
+                                        DL
+                                    </div>
+                                </div>
+                            </div>
 
-                    <div className="security-grid">
-                        <div className="security-card">
-                            <div className="sec-icon"><LockIcon /></div>
-                            <h3>AES-256 Kryptering</h3>
-                            <p>All sensitiv data krypteres med militærgrad kryptering</p>
-                        </div>
-                        <div className="security-card">
-                            <div className="sec-icon"><ShieldIcon /></div>
-                            <h3>GDPR fra dag én</h3>
-                            <p>Innsynsrett, sletting og dataportabilitet innebygd</p>
-                        </div>
-                        <div className="security-card">
-                            <div className="sec-icon"><SignatureIcon /></div>
-                            <h3>Digital signering</h3>
-                            <p>Kryptografisk hash sikrer at dokumenter ikke kan endres</p>
-                        </div>
-                        <div className="security-card">
-                            <div className="sec-icon"><PackageIcon /></div>
-                            <h3>Batchsporing</h3>
-                            <p>Full sporbarhet for produkter og tilbakekalling</p>
+                            {/* Content View */}
+                            <div className="da-content bg-gray-50">
+                                {features[activeFeature].component}
+                            </div>
                         </div>
                     </div>
-                </div>
-            </section>
 
-            {/* CTA */}
-            <section className="demo-cta">
-                <div className="container">
-                    <div className="cta-card demo-cta-card">
-                        <h2>Klar til å prøve selv? 🚀</h2>
-                        <p>
-                            Book en personlig demo hvor vi viser deg hele systemet
-                            tilpasset din klinikk.
-                        </p>
-                        <div className="cta-buttons">
-                            <Link href="/#kontakt" className="btn btn-primary">
-                                Book en demo
-                            </Link>
-                            <Link href="/" className="btn btn-secondary">
-                                Tilbake til forsiden
-                            </Link>
-                        </div>
+                    <div className="text-center mt-12">
+                        <Link href="/#kontakt" className="btn btn-primary">
+                            Bestill Demo for å se mer
+                        </Link>
                     </div>
                 </div>
             </section>

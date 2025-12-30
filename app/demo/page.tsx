@@ -365,20 +365,41 @@ export default function DemoPage() {
                         </div>
 
                         <div className="demo-booking-info">
-                            <h3>Integrasjon</h3>
-                            <div className="integration-grid" style={{ marginTop: '20px', gap: '16px', gridTemplateColumns: '1fr' }}>
-                                <div className="integration-card" style={{ padding: '20px' }}>
-                                    <h3 style={{ fontSize: '16px' }}>Direkte Lenke</h3>
-                                    <code style={{ fontSize: '12px', display: 'block', background: '#1e293b', padding: '10px', borderRadius: '6px', color: '#e2e8f0' }}>
-                                        https://secure-clinic.com/book/din-klinikk
-                                    </code>
+                            <h3>Slik fungerer det</h3>
+                            <div className="process-steps space-y-6 mt-6">
+                                <div className="flex gap-4 items-start">
+                                    <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-sm flex-shrink-0">1</div>
+                                    <div>
+                                        <h4 className="font-bold text-gray-900 text-sm">Pasient booker time</h4>
+                                        <p className="text-xs text-gray-500 mt-1 leading-relaxed">Velger behandling og tidspunkt i din tilpassede online booking.</p>
+                                    </div>
                                 </div>
-                                <div className="integration-card" style={{ padding: '20px' }}>
-                                    <h3 style={{ fontSize: '16px' }}>Iframe Widget</h3>
-                                    <code style={{ fontSize: '12px', display: 'block', background: '#1e293b', padding: '10px', borderRadius: '6px', color: '#e2e8f0' }}>
-                                        &lt;iframe src="..." /&gt;
-                                    </code>
+                                <div className="flex gap-4 items-start">
+                                    <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-sm flex-shrink-0">2</div>
+                                    <div>
+                                        <h4 className="font-bold text-gray-900 text-sm">Automatisk bekreftelse</h4>
+                                        <p className="text-xs text-gray-500 mt-1 leading-relaxed">Pasient får SMS. Avtalen synkroniseres til din kalender i sanntid.</p>
+                                    </div>
                                 </div>
+                                <div className="flex gap-4 items-start">
+                                    <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-sm flex-shrink-0">3</div>
+                                    <div>
+                                        <h4 className="font-bold text-gray-900 text-sm">Klar til behandling</h4>
+                                        <p className="text-xs text-gray-500 mt-1 leading-relaxed">Journalen opprettes automatisk og du er klar til å ta imot pasienten.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mt-8 pt-6 border-t border-gray-100">
+                                <Link href="/integrasjon" className="group flex items-center gap-3 text-xs font-medium text-gray-500 hover:text-brand-700 transition-colors p-2 -ml-2 rounded-lg hover:bg-gray-50">
+                                    <div className="w-8 h-8 rounded bg-gray-100 flex items-center justify-center group-hover:bg-brand-100 group-hover:text-brand-700 transition-colors">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                                    </div>
+                                    <div>
+                                        <span className="block text-gray-900">Teknisk Integrasjon</span>
+                                        <span className="text-gray-400 font-normal">Se hvordan du legger det på din nettside &rarr;</span>
+                                    </div>
+                                </Link>
                             </div>
                         </div>
                     </div>

@@ -1769,6 +1769,60 @@ body {
   text-decoration: underline;
 }
 
+/* Integration Section */
+.demo-integration {
+  background: var(--color-background-secondary);
+}
+
+.integration-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  margin-top: 40px;
+}
+
+@media (min-width: 768px) {
+  .integration-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.integration-card {
+  background: var(--color-background-primary);
+  padding: 32px;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border-light);
+}
+
+.integration-card h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--color-text-primary);
+}
+
+.integration-card p {
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.code-block {
+  background: #1e293b;
+  padding: 20px;
+  border-radius: var(--border-radius-md);
+  overflow-x: auto;
+}
+
+.code-block code {
+  color: #e2e8f0;
+  font-family: 'Fira Code', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
 /* Booking Form */
 .booking-form {
   display: flex;

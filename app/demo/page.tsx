@@ -134,13 +134,6 @@ export default function DemoPage() {
                                         <p>Pasient mottar OTP-kode for verifisering</p>
                                     </div>
                                 </div>
-                                <div className="booking-step-item">
-                                    <div className="step-num">4</div>
-                                    <div>
-                                        <h4>Ferdig!</h4>
-                                        <p>Booking dukker opp i desktop-appen automatisk</p>
-                                    </div>
-                                </div>
                             </div>
 
                             <Link href="/book/oslo-clinic" className="btn btn-primary" target="_blank">
@@ -149,6 +142,43 @@ export default function DemoPage() {
                                     <path d="M6 3h7v7M13 3L6 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
                             </Link>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* SaaS Integration Section */}
+            <section className="demo-section demo-integration">
+                <div className="container">
+                    <div className="demo-section-header">
+                        <span className="section-badge">🔌 Integrasjon</span>
+                        <h2>Enkel integrasjon på deres nettside</h2>
+                        <p>Dere velger selv hvordan booking-systemet skal vises for pasienten</p>
+                    </div>
+
+                    <div className="integration-grid">
+                        <div className="integration-card">
+                            <h3>1. Direkte lenke</h3>
+                            <p>Legg til en knapp på nettsiden deres som åpner booking i et eget, optimalisert vindu.</p>
+                            <div className="code-block">
+                                <code>
+                                    &lt;a href="https://secure-clinic.com/book/din-klinikk"&gt;
+                                    Bestill time
+                                    &lt;/a&gt;
+                                </code>
+                            </div>
+                        </div>
+                        <div className="integration-card">
+                            <h3>2. Innebygd Widget (Iframe)</h3>
+                            <p>Vis booking-skjemaet direkte inne på deres egen side. Kunden forlater aldri nettsiden.</p>
+                            <div className="code-block">
+                                <code>
+                                    &lt;iframe
+                                    src="https://secure-clinic.com/book/din-klinikk"
+                                    width="100%" height="700" ...
+                                    &gt;&lt;/iframe&gt;
+                                </code>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -376,157 +376,158 @@ export default function Home() {
             </div>
           </div>
         </div>
+      </section>
 
 
-        {/* Why Us Section */}
-        <section id="hvorfor-oss" className="why-us section">
-          <div className="container">
-            <div className="why-us-header">
-              <h2>Hvorfor velge oss?</h2>
-              <p>Vi bygger det vi selv savnet i markedet</p>
+      {/* Why Us Section */}
+      <section id="hvorfor-oss" className="why-us section">
+        <div className="container">
+          <div className="why-us-header">
+            <h2>Hvorfor velge oss?</h2>
+            <p>Vi bygger det vi selv savnet i markedet</p>
+          </div>
+          <div className="why-us-grid">
+            <div className="why-us-card warm-card">
+              <div className="why-us-icon"><TargetIcon /></div>
+              <h3>Spesialisert</h3>
+              <p>Ikke et generisk system tilpasset alt. Bygget fra bunnen for injeksjonsbehandlinger og estetiske klinikker.</p>
             </div>
-            <div className="why-us-grid">
-              <div className="why-us-card warm-card">
-                <div className="why-us-icon"><TargetIcon /></div>
-                <h3>Spesialisert</h3>
-                <p>Ikke et generisk system tilpasset alt. Bygget fra bunnen for injeksjonsbehandlinger og estetiske klinikker.</p>
+            <div className="why-us-card warm-card">
+              <div className="why-us-icon"><ShieldIcon /></div>
+              <h3>Sikkerhet først</h3>
+              <p>AES-256 kryptering, envelope encryption, og full audit-logg med hash-kjede som ikke kan manipuleres.</p>
+            </div>
+            <div className="why-us-card warm-card">
+              <div className="why-us-icon"><HandshakeIcon /></div>
+              <h3>Tett samarbeid</h3>
+              <p>Som tidlig bruker får du direkte kontakt med utviklerne. Din feedback former produktet.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Security Section */}
+      <section id="sikkerhet" className="security section">
+        <div className="container">
+          <div className="security-content">
+            <div className="security-text">
+              <h2>Sikkerhet bygget <span className="gradient-text">fra bunnen</span></h2>
+              <p>
+                Vi har ikke lagt på sikkerhet i ettertid — det er fundamentet
+                som alt annet er bygget på.
+              </p>
+              <ul className="security-list">
+                <li>
+                  <span className="check">✓</span>
+                  <span><strong>Envelope encryption</strong> — unike nøkler per felt</span>
+                </li>
+                <li>
+                  <span className="check">✓</span>
+                  <span><strong>Hash-kjede logg</strong> — kan ikke slettes eller endres</span>
+                </li>
+                <li>
+                  <span className="check">✓</span>
+                  <span><strong>Tenant-isolasjon</strong> — klinikker ser aldri hverandres data</span>
+                </li>
+                <li>
+                  <span className="check">✓</span>
+                  <span><strong>Rollebasert tilgang</strong> — lege, admin, terapeut, resepsjon</span>
+                </li>
+                <li>
+                  <span className="check">✓</span>
+                  <span><strong>GDPR innebygd</strong> — SAR-eksport, anonymisering, restriksjon</span>
+                </li>
+              </ul>
+            </div>
+            <div className="security-badges">
+              <div className="security-badge warm-card">
+                <div className="security-badge-icon"><LockIcon /></div>
+                <h4>AES-256-GCM</h4>
+                <p>Autentisert kryptering</p>
               </div>
-              <div className="why-us-card warm-card">
-                <div className="why-us-icon"><ShieldIcon /></div>
-                <h3>Sikkerhet først</h3>
-                <p>AES-256 kryptering, envelope encryption, og full audit-logg med hash-kjede som ikke kan manipuleres.</p>
+              <div className="security-badge warm-card">
+                <div className="security-badge-icon"><DocumentIcon /></div>
+                <h4>GDPR</h4>
+                <p>Bygget inn fra start</p>
               </div>
-              <div className="why-us-card warm-card">
-                <div className="why-us-icon"><HandshakeIcon /></div>
-                <h3>Tett samarbeid</h3>
-                <p>Som tidlig bruker får du direkte kontakt med utviklerne. Din feedback former produktet.</p>
+              <div className="security-badge warm-card">
+                <div className="security-badge-icon"><LinkIcon /></div>
+                <h4>Hash-kjede</h4>
+                <p>Manipulasjonssikker logg</p>
+              </div>
+              <div className="security-badge warm-card">
+                <div className="security-badge-icon"><CloudIcon /></div>
+                <h4>Azure</h4>
+                <p>Enterprise sky</p>
               </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Security Section */}
-        <section id="sikkerhet" className="security section">
-          <div className="container">
-            <div className="security-content">
-              <div className="security-text">
-                <h2>Sikkerhet bygget <span className="gradient-text">fra bunnen</span></h2>
-                <p>
-                  Vi har ikke lagt på sikkerhet i ettertid — det er fundamentet
-                  som alt annet er bygget på.
-                </p>
-                <ul className="security-list">
-                  <li>
-                    <span className="check">✓</span>
-                    <span><strong>Envelope encryption</strong> — unike nøkler per felt</span>
-                  </li>
-                  <li>
-                    <span className="check">✓</span>
-                    <span><strong>Hash-kjede logg</strong> — kan ikke slettes eller endres</span>
-                  </li>
-                  <li>
-                    <span className="check">✓</span>
-                    <span><strong>Tenant-isolasjon</strong> — klinikker ser aldri hverandres data</span>
-                  </li>
-                  <li>
-                    <span className="check">✓</span>
-                    <span><strong>Rollebasert tilgang</strong> — lege, admin, terapeut, resepsjon</span>
-                  </li>
-                  <li>
-                    <span className="check">✓</span>
-                    <span><strong>GDPR innebygd</strong> — SAR-eksport, anonymisering, restriksjon</span>
-                  </li>
+      {/* CTA Section */}
+      <section id="kontakt" className="cta section">
+        <div className="container">
+          <div className="cta-card">
+            <h2>Klar for et bedre journalsystem? 💉</h2>
+            <p>
+              Vi bygger dette for deg som driver med injeksjonsbehandlinger.
+              Ta kontakt så viser vi deg hva vi holder på med.
+            </p>
+            <button onClick={() => openModal("demo")} className="btn">
+              Ta kontakt
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="footer">
+        <div className="container">
+          <div className="footer-content">
+            <div className="footer-brand">
+              <div className="footer-brand-logo">
+                <Image src="/logo.png" alt="Secure Clinic Journal" width={36} height={36} />
+                <span>Secure Clinic</span>
+              </div>
+              <p>
+                Journalsystemet laget spesielt for estetiske klinikker og
+                injeksjonsbehandlinger. Bygget med sikkerhet og GDPR i kjernen.
+              </p>
+            </div>
+            <div className="footer-links">
+              <div className="footer-links-column">
+                <h4>Produkt</h4>
+                <ul>
+                  <li><a href="#funksjoner">Funksjoner</a></li>
+                  <li><a href="#sikkerhet">Sikkerhet</a></li>
+                  <li><a href="#hvorfor-oss">Hvorfor oss</a></li>
                 </ul>
               </div>
-              <div className="security-badges">
-                <div className="security-badge warm-card">
-                  <div className="security-badge-icon"><LockIcon /></div>
-                  <h4>AES-256-GCM</h4>
-                  <p>Autentisert kryptering</p>
-                </div>
-                <div className="security-badge warm-card">
-                  <div className="security-badge-icon"><DocumentIcon /></div>
-                  <h4>GDPR</h4>
-                  <p>Bygget inn fra start</p>
-                </div>
-                <div className="security-badge warm-card">
-                  <div className="security-badge-icon"><LinkIcon /></div>
-                  <h4>Hash-kjede</h4>
-                  <p>Manipulasjonssikker logg</p>
-                </div>
-                <div className="security-badge warm-card">
-                  <div className="security-badge-icon"><CloudIcon /></div>
-                  <h4>Azure</h4>
-                  <p>Enterprise sky</p>
-                </div>
+              <div className="footer-links-column">
+                <h4>Kontakt</h4>
+                <ul>
+                  <li><a href="mailto:hei@secureclinic.no">hei@secureclinic.no</a></li>
+                  <li><button onClick={() => openModal("demo")} className="footer-link-btn">Book en demo</button></li>
+                  <li><button onClick={() => openModal("trial")} className="footer-link-btn">Meld interesse</button></li>
+                </ul>
               </div>
             </div>
           </div>
-        </section>
-
-        {/* CTA Section */}
-        <section id="kontakt" className="cta section">
-          <div className="container">
-            <div className="cta-card">
-              <h2>Klar for et bedre journalsystem? 💉</h2>
-              <p>
-                Vi bygger dette for deg som driver med injeksjonsbehandlinger.
-                Ta kontakt så viser vi deg hva vi holder på med.
-              </p>
-              <button onClick={() => openModal("demo")} className="btn">
-                Ta kontakt
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </button>
+          <div className="footer-bottom">
+            <p>© 2025 Secure Clinic Journal. Laget i Norge.</p>
+            <div className="footer-bottom-links">
+              <a href="mailto:hei@secureclinic.no">hei@secureclinic.no</a>
             </div>
           </div>
-        </section>
+        </div>
+      </footer>
 
-        {/* Footer */}
-        <footer className="footer">
-          <div className="container">
-            <div className="footer-content">
-              <div className="footer-brand">
-                <div className="footer-brand-logo">
-                  <Image src="/logo.png" alt="Secure Clinic Journal" width={36} height={36} />
-                  <span>Secure Clinic</span>
-                </div>
-                <p>
-                  Journalsystemet laget spesielt for estetiske klinikker og
-                  injeksjonsbehandlinger. Bygget med sikkerhet og GDPR i kjernen.
-                </p>
-              </div>
-              <div className="footer-links">
-                <div className="footer-links-column">
-                  <h4>Produkt</h4>
-                  <ul>
-                    <li><a href="#funksjoner">Funksjoner</a></li>
-                    <li><a href="#sikkerhet">Sikkerhet</a></li>
-                    <li><a href="#hvorfor-oss">Hvorfor oss</a></li>
-                  </ul>
-                </div>
-                <div className="footer-links-column">
-                  <h4>Kontakt</h4>
-                  <ul>
-                    <li><a href="mailto:hei@secureclinic.no">hei@secureclinic.no</a></li>
-                    <li><button onClick={() => openModal("demo")} className="footer-link-btn">Book en demo</button></li>
-                    <li><button onClick={() => openModal("trial")} className="footer-link-btn">Meld interesse</button></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div className="footer-bottom">
-              <p>© 2025 Secure Clinic Journal. Laget i Norge.</p>
-              <div className="footer-bottom-links">
-                <a href="mailto:hei@secureclinic.no">hei@secureclinic.no</a>
-              </div>
-            </div>
-          </div>
-        </footer>
-
-        {/* AI Chatbot */}
-        <ChatBot />
-      </>
-      );
+      {/* AI Chatbot */}
+      <ChatBot />
+    </>
+  );
 }

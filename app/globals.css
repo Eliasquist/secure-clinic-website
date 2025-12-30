@@ -52,6 +52,33 @@
   --border-radius-sm: 12px;
 }
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scroll margin for anchor navigation (prevents navbar overlap) */
+section[id],
+[id] {
+  scroll-margin-top: 96px;
+  /* navbar height + buffer */
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--color-bg-main);
+  color: var(--color-text-primary);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
 /* ===== MODAL ===== */
 .modal-overlay {
   position: fixed;

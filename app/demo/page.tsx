@@ -102,32 +102,38 @@ const FaceMapReplica = ({ activeZone, onZoneClick }: { activeZone: string | null
 // Journal Replica
 const JournalReplica = () => {
     const [selectedZone, setSelectedZone] = useState<string | null>(null);
+    const [activeTab, setActiveTab] = useState('all');
 
     return (
-        <div className="da-journal-grid">
+        <div className="da-card-container">
             {/* Left: Map */}
             <div className="da-journal-left">
-                <div className="flex gap-2 mb-4 text-xs w-full justify-center">
-                    <span className="px-2 py-1 rounded bg-gray-800 text-white">Alle</span>
-                    <span className="px-2 py-1 rounded bg-red-100 text-red-800">Muskler</span>
-                    <span className="px-2 py-1 rounded bg-blue-100 text-blue-800">Volum</span>
+                <div className="da-toggle-group">
+                    <div
+                        className={`da-toggle-item ${activeTab === 'all' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('all')}
+                    >All</div>
+                    <div
+                        className={`da-toggle-item ${activeTab === 'muscles' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('muscles')}
+                    >Muskler</div>
+                    <div
+                        className={`da-toggle-item ${activeTab === 'volume' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('volume')}
+                    >Volum</div>
                 </div>
                 <FaceMapReplica activeZone={selectedZone} onZoneClick={setSelectedZone} />
             </div>
 
             {/* Right: Details */}
             <div className="da-journal-right">
-                <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
-                    <div>
-                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Status</span>
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-50 text-yellow-800 border border-yellow-200">
-                            Utkast under arbeid
-                        </span>
-                    </div>
+                <div className="da-status-row">
+                    <span className="da-input-label" style={{ marginBottom: 0 }}>Status</span>
+                    <span className="text-sm font-medium text-gray-900">Utkast under arbeid</span>
                 </div>
 
                 <div className="da-input-group">
-                    <label className="da-section-title block">1. Anamnese & Vurdering</label>
+                    <label className="da-input-label">1. Anamnese & Vurdering</label>
                     <textarea
                         className="da-textarea"
                         defaultValue="Pasienten ønsker å behandle 'sinnarynken' (glabella). Ingen kontraindikasjoner."
@@ -135,7 +141,7 @@ const JournalReplica = () => {
                 </div>
 
                 <div className="da-input-group">
-                    <label className="da-section-title block">2. Behandling</label>
+                    <label className="da-input-label">2. Behandling</label>
                     <table className="da-table">
                         <thead>
                             <tr>
@@ -311,6 +317,7 @@ export default function DemoPage() {
                     </Link>
                     <ul className="navbar-links">
                         <li><Link href="/#funksjoner">Funksjoner</Link></li>
+                        <li><Link href="/startpakke">Startpakke</Link></li>
                         <li><Link href="/#sikkerhet">Sikkerhet</Link></li>
                         <li><Link href="/#kontakt">Kontakt</Link></li>
                     </ul>
@@ -398,8 +405,10 @@ export default function DemoPage() {
                     <div className="desktop-app-replica shadow-2xl border border-gray-200">
                         {/* Sidebar */}
                         <div className="da-sidebar">
-                            <div className="mb-6 px-2 font-bold text-gray-900 flex items-center gap-2">
-                                <Image src="/logo.png" width={24} height={24} alt="Logo" />
+                            <div className="da-sidebar-brand">
+                                <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                                    SC
+                                </div>
                                 Secure Clinic
                             </div>
 

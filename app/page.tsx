@@ -171,6 +171,8 @@ export default function Home() {
             <li><a href="#funksjoner">Funksjoner</a></li>
             <li><a href="#sikkerhet">Sikkerhet</a></li>
             <li><a href="/demo">Se demo</a></li>
+            <li><a href="/startpakke">Startpakke</a></li>
+            <li><a href="/integrasjon">Integrasjon</a></li>
             <li><a href="#kontakt">Kontakt</a></li>
           </ul>
           <div className="navbar-cta">
@@ -296,28 +298,6 @@ export default function Home() {
               <p>Generer fullstendig pasientdata-eksport (SAR) med ett klikk for innsynsrett.</p>
             </div>
 
-            {/* Feature 7 - NEW: Compliance Package */}
-            <div className="feature-card group col-span-full md:col-span-2 lg:col-span-3 border-2 border-brand-100 bg-brand-50/30">
-              <div className="feature-icon bg-brand-100 text-brand-700 group-hover:bg-brand-600 group-hover:text-white">
-                <DocumentIcon />
-              </div>
-              <div className="flex flex-col md:flex-row gap-6 items-start">
-                <div>
-                  <h3 className="text-brand-900">Inkludert Compliance-pakke 🎁</h3>
-                  <p className="mb-4">
-                    Vi vet at dokumentasjon er kjedelig. Derfor får du en **ferdig utfylt pakke** med maler skreddersydd for klinikken din:
-                  </p>
-                  <ul className="text-sm text-gray-600 space-y-1 grid grid-cols-1 md:grid-cols-2 gap-x-8">
-                    <li className="flex items-center gap-2">✅ Risikovurdering (ROS) mal</li>
-                    <li className="flex items-center gap-2">✅ Databehandleravtale (DPA)</li>
-                    <li className="flex items-center gap-2">✅ Personvernerklæring</li>
-                    <li className="flex items-center gap-2">✅ Avvikshåndterings-skjema</li>
-                    <li className="flex items-center gap-2">✅ Kriseplan (Incident Response)</li>
-                    <li className="flex items-center gap-2">✅ Opplæringslogg for ansatte</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </section>

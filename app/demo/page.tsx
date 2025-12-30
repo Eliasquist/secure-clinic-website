@@ -318,6 +318,7 @@ export default function DemoPage() {
                     <ul className="navbar-links">
                         <li><Link href="/#funksjoner">Funksjoner</Link></li>
                         <li><Link href="/startpakke">Startpakke</Link></li>
+                        <li><Link href="/integrasjon">Integrasjon</Link></li>
                         <li><Link href="/#sikkerhet">Sikkerhet</Link></li>
                         <li><Link href="/#kontakt">Kontakt</Link></li>
                     </ul>
@@ -371,20 +372,35 @@ export default function DemoPage() {
                         </div>
 
                         <div className="demo-booking-info">
-                            <h3>Integrasjon</h3>
-                            <div className="integration-grid" style={{ marginTop: '20px', gap: '16px', gridTemplateColumns: '1fr' }}>
-                                <div className="integration-card" style={{ padding: '20px' }}>
-                                    <h3 style={{ fontSize: '16px' }}>Direkte Lenke</h3>
-                                    <code style={{ fontSize: '12px', display: 'block', background: '#1e293b', padding: '10px', borderRadius: '6px', color: '#e2e8f0' }}>
-                                        https://secure-clinic.com/book/din-klinikk
-                                    </code>
+                            <h3>Slik fungerer det</h3>
+                            <div className="space-y-6 mt-6">
+                                <div className="flex gap-4">
+                                    <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold flex-shrink-0">1</div>
+                                    <div>
+                                        <h4 className="font-bold text-gray-900">Pasienten bestiller</h4>
+                                        <p className="text-sm text-gray-600">Pasienten finner en ledig tid som passer i din kalender.</p>
+                                    </div>
                                 </div>
-                                <div className="integration-card" style={{ padding: '20px' }}>
-                                    <h3 style={{ fontSize: '16px' }}>Iframe Widget</h3>
-                                    <code style={{ fontSize: '12px', display: 'block', background: '#1e293b', padding: '10px', borderRadius: '6px', color: '#e2e8f0' }}>
-                                        &lt;iframe src="..." /&gt;
-                                    </code>
+                                <div className="flex gap-4">
+                                    <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold flex-shrink-0">2</div>
+                                    <div>
+                                        <h4 className="font-bold text-gray-900">Bekreftelse på SMS</h4>
+                                        <p className="text-sm text-gray-600">Både du og pasienten mottar umiddelbart en bekreftelse.</p>
+                                    </div>
                                 </div>
+                                <div className="flex gap-4">
+                                    <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold flex-shrink-0">3</div>
+                                    <div>
+                                        <h4 className="font-bold text-gray-900">Journal opprettes</h4>
+                                        <p className="text-sm text-gray-600">Når pasienten kommer, er journalen allerede klargjort for deg.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mt-8 pt-6 border-t border-gray-100">
+                                <Link href="/integrasjon" className="text-brand-600 text-sm font-semibold hover:underline flex items-center gap-1">
+                                    Se hvordan du kobler dette til din nettside <span aria-hidden="true">&rarr;</span>
+                                </Link>
                             </div>
                         </div>
                     </div>

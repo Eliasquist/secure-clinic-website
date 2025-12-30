@@ -216,12 +216,12 @@ export default function IntegrationPage() {
                             <p className="text-gray-500">Vil du gjøre migreringen selv? Vi bruker et standardisert JSON-format for import.</p>
                         </div>
 
-                        <div className="bg-gray-900 rounded-xl overflow-hidden shadow-2xl">
-                            <div className="flex border-b border-gray-800">
-                                <div className="px-6 py-4 text-sm font-medium text-white border-b-2 border-blue-500">migration_schema.json</div>
+                        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                            <div className="px-6 py-4 border-b border-gray-100 text-sm font-semibold text-gray-900">
+                                migration_schema.json
                             </div>
-                            <div className="p-6 overflow-x-auto">
-                                <pre className="font-mono text-sm text-blue-100 leading-relaxed">
+                            <div className="p-6 bg-gray-50 overflow-x-auto">
+                                <pre className="font-mono text-sm text-slate-700 leading-relaxed">
                                     {`{
   "source_system": "custom_export",
   "version": "1.0",
@@ -255,9 +255,9 @@ export default function IntegrationPage() {
 }`}
                                 </pre>
                             </div>
-                            <div className="bg-gray-800 px-6 py-4">
-                                <p className="text-xs text-gray-400">
-                                    <strong className="text-white">Merk:</strong> Sensitive data (som fødselsnummer) bør ikke inkluderes i klartekst uten avtale.
+                            <div className="px-6 py-4 bg-white border-t border-gray-100">
+                                <p className="text-xs text-gray-600">
+                                    <strong className="text-gray-900">Merk:</strong> Sensitive data (som fødselsnummer) bør ikke inkluderes i klartekst uten avtale.
                                     Bruk vår Sikre Opplasting (i admin-panelet) for å sende denne filen, så håndterer vår importmotor kryptering og deduplisering.
                                 </p>
                             </div>

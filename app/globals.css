@@ -277,6 +277,11 @@ body {
   max-width: 65ch;
 }
 
+.divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, #e5e7eb, transparent);
+}
+
 .gradient-text {
   background: var(--gradient-primary);
   -webkit-background-clip: text;

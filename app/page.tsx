@@ -75,7 +75,7 @@ export default function Home() {
 
             {!submitted ? (
               <>
-                <h2>{modalType === "demo" ? "Book en demo 📅" : "Bli med som tidlig bruker 🎉"}</h2>
+                <h2>{modalType === "demo" ? "Book en demo" : "Bli med som tidlig bruker"}</h2>
                 <p>
                   {modalType === "demo"
                     ? "Fyll ut skjemaet så tar vi kontakt for å avtale en uforpliktende demo."
@@ -295,7 +295,7 @@ export default function Home() {
               <p>Registrer og følg opp komplikasjoner med kobling til opprinnelig behandling og bilder.</p>
             </div>
             {/* Feature 6 */}
-            <div className="feature-card group">
+            <div className="feature-card warm-card group">
               <div className="feature-icon bg-orange-50 text-orange-600 group-hover:bg-orange-600 group-hover:text-white">
                 <ExportIcon />
               </div>
@@ -365,7 +365,7 @@ export default function Home() {
                 <div className="bg-white p-6 rounded-2xl shadow-lg border border-slate-100 max-w-sm w-full transform rotate-3 hover:rotate-0 transition-transform duration-300">
                   <div className="border-b-2 border-slate-50 pb-4 mb-4">
                     <div className="h-4 bg-slate-100 rounded w-1/3 mb-2"></div>
-                    <div className="h-8 bg-slate-800 rounded w-2/3"></div>
+                    <div className="h-8 bg-slate-200 rounded w-2/3"></div>
                   </div>
                   <div className="space-y-3">
                     <div className="h-2 bg-slate-100 rounded w-full"></div>

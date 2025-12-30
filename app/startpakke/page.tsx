@@ -37,10 +37,10 @@ export default function StarterKitPage() {
             {/* Hero */}
             <header className="pt-24 pb-16 bg-white border-b border-gray-100">
                 <div className="container max-w-4xl text-center">
-                    <div className="inline-block px-4 py-1.5 bg-brand-50 text-brand-700 rounded-full text-sm font-semibold mb-6">
-                        Inkludert i alle abonnement 🎁
+                    <div className="inline-block px-4 py-1.5 bg-teal-100 text-teal-700 rounded-full text-sm font-semibold mb-6">
+                        Inkludert i alle abonnement
                     </div>
-                    <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6 leading-tight">
+                    <h1 className="heading-1">
                         Dokumentasjon er kjedelig. <br />
                         <span className="gradient-text">Vi har gjort jobben for deg.</span>
                     </h1>
@@ -54,32 +54,47 @@ export default function StarterKitPage() {
             {/* Content List */}
             <section className="py-20">
                 <div className="container max-w-5xl">
-                    <div className="grid md:grid-cols-2 gap-8">
+                    <div className="grid gap-6">
                         {includedItems.map((item, i) => (
-                            <div key={i} className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                                <div className="flex items-center gap-4 mb-4">
-                                    <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-xl">
-                                        ✅
+                            <div key={i} className="group bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:border-teal-300 transition-all">
+                                <div className="flex items-start gap-4">
+                                    {/* Icon Left */}
+                                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-100 to-teal-100 flex items-center justify-center text-green-700 flex-shrink-0 group-hover:scale-110 transition-transform">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M20 6L9 17l-5-5" />
+                                        </svg>
                                     </div>
-                                    <h3 className="text-xl font-bold text-gray-900">{item.title}</h3>
+
+                                    {/* Content Center */}
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="text-lg font-bold text-gray-900 mb-2">{item.title}</h3>
+                                        <p className="text-gray-600 leading-relaxed text-sm max-w-2xl">
+                                            {item.desc}
+                                        </p>
+                                    </div>
+
+                                    {/* Badge Right */}
+                                    <div className="hidden sm:flex items-center px-3 py-1.5 bg-teal-50 text-teal-700 rounded-full text-xs font-semibold border border-teal-200">
+                                        Inkludert
+                                    </div>
                                 </div>
-                                <p className="text-gray-600 leading-relaxed pl-14">
-                                    {item.desc}
-                                </p>
                             </div>
                         ))}
                     </div>
 
-                    <div className="mt-20 bg-brand-900 rounded-3xl p-12 text-center text-white relative overflow-hidden">
+                    <div className="mt-20 bg-gray-900 rounded-3xl p-12 text-center text-white relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-full h-full bg-[url('/pattern.png')] opacity-10"></div>
                         <div className="relative z-10 max-w-2xl mx-auto">
                             <h2 className="text-3xl font-bold mb-6">Klar til å få orden på systemet?</h2>
-                            <p className="text-brand-100 mb-8 text-lg">
+                            <p className="text-gray-300 mb-8 text-lg">
                                 Alt dette ligger klart i din Secure Clinic-konto fra dag én.
                                 Ingen ekstra kostnader.
                             </p>
-                            <Link href="/#kontakt" className="inline-block px-8 py-4 bg-white text-brand-900 font-bold rounded-lg hover:bg-brand-50 transition-colors">
+                            <Link href="/#kontakt" className="inline-flex items-center px-8 py-4 bg-white text-gray-900 font-bold rounded-lg hover:bg-gray-100 hover:shadow-lg transition-all transform hover:scale-105">
                                 Få tilgang nå
+                                <svg className="ml-2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
                             </Link>
                         </div>
                     </div>
@@ -90,7 +105,7 @@ export default function StarterKitPage() {
             <footer className="footer bg-white border-t border-gray-100 pt-16 pb-8">
                 <div className="container">
                     <div className="footer-bottom text-center text-gray-400 text-sm">
-                        <p>© 2025 Secure Clinic Journal. Laget med 💚 i Norge.</p>
+                        <p>© 2025 Secure Clinic Journal. Laget i Norge.</p>
                     </div>
                 </div>
             </footer>

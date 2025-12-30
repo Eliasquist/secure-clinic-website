@@ -209,13 +209,13 @@ export default function BookingPage() {
             <div className="booking-container">
                 {/* Demo Banner */}
                 {/* Demo Banner - Updated to neutral blue theme */}
-                <div className="mb-8 p-4 bg-blue-50 border border-blue-100 rounded-xl flex items-center gap-4 text-sm text-blue-800">
-                    <span className="text-blue-500">
+                <div className="mb-8 p-4 bg-blue-50 border border-blue-100 rounded-xl flex items-start gap-4 text-sm text-blue-800">
+                    <span className="text-blue-500 mt-0.5">
                         <TestTubeIcon />
                     </span>
-                    <div>
-                        <strong className="block font-semibold">Dette er en demo</strong>
-                        <span className="text-blue-600">Utforsk hvordan booking-systemet fungerer. Ingen ekte avtaler opprettes.</span>
+                    <div className="flex flex-col">
+                        <strong className="font-semibold text-base mb-1">Dette er en demo</strong>
+                        <span className="text-blue-600 leading-relaxed">Utforsk hvordan booking-systemet fungerer. Ingen ekte avtaler opprettes.</span>
                     </div>
                 </div>
 

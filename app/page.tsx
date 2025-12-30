@@ -190,11 +190,11 @@ export default function Home() {
               <span className="dot"></span>
               For estetiske klinikker
             </div>
-            <h1>
+            <h1 className="heading-1">
               Journalsystemet bygget for<br />
               <span className="gradient-text">injeksjonsbehandlinger</span>
             </h1>
-            <p className="hero-subtitle">
+            <p className="lead">
               Vi bygger et spesialisert journalsystem for klinikker som driver med
               injeksjonsbehandlinger — med innebygd injeksjonskartlegging,
               produktsporing, og automatisk fakturering. Alt GDPR-klart fra dag én.
@@ -260,13 +260,13 @@ export default function Home() {
       <section id="funksjoner" className="features section">
         <div className="container">
           <div className="features-header">
-            <h2>Bygget for injeksjonsklinikker</h2>
+            <h2 className="heading-2">Bygget for injeksjonsklinikker</h2>
             <p>Funksjoner du faktisk trenger — ikke generiske løsninger</p>
           </div>
           <div className="features-grid">
             <div className="feature-card warm-card">
               <div className="feature-icon"><SyringeIcon /></div>
-              <h3>Injeksjonskartlegging</h3>
+              <h3 className="heading-3">Injeksjonskartlegging</h3>
               <p>Marker nøyaktig hvor du setter injeksjoner på et visuelt kart. Dose, dybde, produkt og sone — alt dokumentert automatisk.</p>
             </div>
             <div className="feature-card warm-card">
@@ -276,7 +276,7 @@ export default function Home() {
             </div>
             <div className="feature-card warm-card">
               <div className="feature-icon"><SignatureIcon /></div>
-              <h3>Digital signering</h3>
+              <h3 className="heading-3">Digital signering</h3>
               <p>Lås og signer konsultasjoner med kryptografisk hash. Dokumentet kan ikke endres i ettertid uten at det vises.</p>
             </div>
             <div className="feature-card warm-card">
@@ -382,7 +382,7 @@ export default function Home() {
       <section id="hvorfor-oss" className="why-us section">
         <div className="container">
           <div className="why-us-header">
-            <h2>Hvorfor velge oss?</h2>
+            <h2 className="heading-2">Hvorfor velge oss?</h2>
             <p>Vi bygger det vi selv savnet i markedet</p>
           </div>
           <div className="why-us-grid">
@@ -410,7 +410,7 @@ export default function Home() {
         <div className="container">
           <div className="security-content">
             <div className="security-text">
-              <h2>Sikkerhet bygget <span className="gradient-text">fra bunnen</span></h2>
+              <h2 className="heading-2">Sikkerhet bygget <span className="gradient-text">fra bunnen</span></h2>
               <p>
                 Vi har ikke lagt på sikkerhet i ettertid — det er fundamentet
                 som alt annet er bygget på.

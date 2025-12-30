@@ -3077,7 +3077,13 @@ body {
   }
 }
 
-/* ===== MISSING UTILITIES (Added for Tailwind compatibility) ===== */
+/* ==========================================================================
+   Custom utility classes (Tailwind-inspired)
+   NOTE: This project does NOT use Tailwind. We maintain a custom utility layer
+   for layout/spacing/color helpers used across pages (e.g. flex, gap-*, p-*, bg-*).
+   If you remove/edit these, first check actual usage in app/ via grep.
+   ========================================================================== */
+
 /* Flexbox */
 .flex {
   display: flex;

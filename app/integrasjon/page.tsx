@@ -139,6 +139,72 @@ export default function IntegrationPage() {
                     </section>
 
                 </div>
+
+                {/* Section 3: Technical Specs (DIY) */}
+                <section className="mt-24 pt-16 border-t border-gray-100">
+                    <div className="container max-w-4xl">
+                        <div className="text-center mb-12">
+                            <h2 className="text-2xl font-bold text-gray-900">For Utviklere & Tekniske</h2>
+                            <p className="text-gray-500">Vil du gjøre migreringen selv? Vi bruker et standardisert JSON-format for import.</p>
+                        </div>
+
+                        <div className="bg-gray-900 rounded-xl overflow-hidden shadow-2xl">
+                            <div className="flex border-b border-gray-800">
+                                <div className="px-6 py-4 text-sm font-medium text-white border-b-2 border-brand-500">migration_schema.json</div>
+                            </div>
+                            <div className="p-6 overflow-x-auto">
+                                <pre className="font-mono text-sm text-blue-100 leading-relaxed">
+                                    {`{
+  "source_system": "custom_export",
+  "version": "1.0",
+  "patients": [
+    {
+      "external_id": "1001",
+      "first_name": "Ola",
+      "last_name": "Nordmann",
+      "phone": "+4790000000",
+      "birth_date": "1990-01-01", 
+      "history": {
+        "allergies": "None",
+        "medications": "None"
+      },
+      "appointments": [
+        {
+          "date": "2023-12-01T10:00:00Z",
+          "type": "CONSULTATION",
+          "status": "COMPLETED",
+          "notes": "Vurdering av sinnarynke."
+        }
+      ]
+    }
+  ]
+}`}
+                                </pre>
+                            </div>
+                            <div className="bg-gray-800 px-6 py-4">
+                                <p className="text-xs text-gray-400">
+                                    <strong className="text-white">Merk:</strong> Sensitive data (som fødselsnummer) bør ikke inkluderes i klartekst uten avtale.
+                                    Bruk vår Sikre Opplasting (i admin-panelet) for å sende denne filen, så håndterer vår import-motor (ETL) kryptering og deduplisering.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="mt-12 grid md:grid-cols-2 gap-8">
+                            <div className="bg-white p-6 rounded-xl border border-gray-200">
+                                <h4 className="font-bold text-gray-900 mb-2">🔍 Data-vasking</h4>
+                                <p className="text-sm text-gray-600">
+                                    Systemet vårt vil automatisk prøve å matche pasienter mot eksisterende register basert på telefonnummer og navn for å unngå duplikater.
+                                </p>
+                            </div>
+                            <div className="bg-white p-6 rounded-xl border border-gray-200">
+                                <h4 className="font-bold text-gray-900 mb-2">🛡️ Sikkerhet</h4>
+                                <p className="text-sm text-gray-600">
+                                    Alle importerte notater blir automatisk tidsstemplet og signert som "Historisk Data". De kan leses, men ikke endres, for å bevare integriteten.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </main>
 
             {/* Footer */}

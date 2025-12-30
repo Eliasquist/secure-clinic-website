@@ -344,7 +344,7 @@ export default function DemoPage() {
             <section className="demo-section">
                 <div className="container">
                     <div className="demo-section-header">
-                        <span className="section-badge">🎯 For pasienten</span>
+                        <span className="section-badge bg-teal-100 text-teal-800">For pasienten</span>
                         <h2>Online Booking</h2>
                         <p>
                             Dette er hva pasienten ser. Prøv å booke en time!
@@ -410,7 +410,7 @@ export default function DemoPage() {
             <section className="demo-section demo-app-section" style={{ background: '#fff' }}>
                 <div className="container">
                     <div className="demo-section-header">
-                        <span className="section-badge">🖥️ For behandleren</span>
+                        <span className="section-badge bg-blue-100 text-blue-800">For behandleren</span>
                         <h2>Secure Clinic Desktop</h2>
                         <p>
                             Slik ser arbeidsverktøyet ditt ut. Dette er en eksakt kopi av applikasjonen.
@@ -436,10 +436,14 @@ export default function DemoPage() {
                                 </div>
                             ))}
 
-                            <div className="mt-auto pt-4 border-t border-gray-100">
-                                <div className="da-sidebar-item text-red-600 hover:bg-red-50">
-                                    <span>🚪</span> Logg ut
-                                </div>
+                            <div className="da-sidebar-item text-red-600 hover:bg-red-50">
+                                <span>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                        <polyline points="16 17 21 12 16 7" />
+                                        <line x1="21" y1="12" x2="9" y2="12" />
+                                    </svg>
+                                </span> Logg ut
                             </div>
                         </div>
 
@@ -474,7 +478,7 @@ export default function DemoPage() {
             <footer className="footer">
                 <div className="container">
                     <div className="footer-bottom">
-                        <p>© 2025 Secure Clinic Journal. Laget med 💚 i Norge.</p>
+                        <p>© 2025 Secure Clinic Journal. Laget i Norge.</p>
                     </div>
                 </div>
             </footer>

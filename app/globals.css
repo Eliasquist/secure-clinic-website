@@ -1769,10 +1769,6 @@ body {
   text-decoration: underline;
 }
 
-/* Integration Section */
-.demo-integration {
-  background: var(--color-background-secondary);
-}
 
 .integration-grid {
   display: grid;

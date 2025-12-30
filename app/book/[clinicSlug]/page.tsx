@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { TurnstileWidget } from '@/app/components/TurnstileWidget';
+import { TestTubeIcon } from '@/app/icons';
 
 interface ServiceCategory {
     slug: string;
@@ -207,11 +208,14 @@ export default function BookingPage() {
         <div className="booking-page">
             <div className="booking-container">
                 {/* Demo Banner */}
-                <div className="demo-banner">
-                    <span className="demo-banner-icon">🧪</span>
+                {/* Demo Banner - Updated to neutral blue theme */}
+                <div className="mb-8 p-4 bg-blue-50 border border-blue-100 rounded-xl flex items-center gap-4 text-sm text-blue-800">
+                    <span className="text-blue-500">
+                        <TestTubeIcon />
+                    </span>
                     <div>
-                        <strong>Dette er en demo</strong>
-                        <span> — Utforsk hvordan booking-systemet fungerer. Ingen ekte avtaler opprettes.</span>
+                        <strong className="block font-semibold">Dette er en demo</strong>
+                        <span className="text-blue-600">Utforsk hvordan booking-systemet fungerer. Ingen ekte avtaler opprettes.</span>
                     </div>
                 </div>
 

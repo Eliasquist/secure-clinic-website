@@ -16,6 +16,7 @@ import {
   DocumentIcon,
   LinkIcon,
   CloudIcon,
+  CheckIcon,
 } from "./icons";
 import ChatBot from "./ChatBot";
 
@@ -305,65 +306,77 @@ export default function Home() {
       <section className="section bg-warm">
         <div className="container">
           <div className="max-w-4xl mx-auto">
-            <div className="bg-orange-50 rounded-3xl border-2 border-orange-100 p-8 md:p-12 relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-8 opacity-10">
+            {/* Changed from orange to Teal/Slate for a cleaner, professional look */}
+            <div className="bg-slate-50 rounded-3xl border border-slate-200 p-8 md:p-12 relative overflow-hidden shadow-sm">
+              <div className="absolute top-0 right-0 p-8 opacity-5">
                 <ShieldIcon />
               </div>
 
               <div className="flex flex-col md:flex-row gap-12 items-center">
                 <div className="flex-1">
-                  <div className="inline-block p-4 bg-white rounded-2xl shadow-sm mb-6 text-orange-600">
+                  <div className="inline-block p-4 bg-white rounded-2xl shadow-sm mb-6 text-teal-600">
                     <DocumentIcon />
                   </div>
-                  <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                    Inkludert Compliance-pakke 🎁
+                  <h2 className="text-3xl font-bold text-slate-900 mb-4">
+                    Inkludert Compliance-pakke
                   </h2>
-                  <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+                  <p className="text-lg text-slate-600 mb-6 leading-relaxed">
                     Vi vet at dokumentasjon er kjedelig. Derfor får du en <strong>ferdig utfylt pakke</strong> med maler skreddersydd for klinikken din:
                   </p>
 
-                  <ul className="space-y-3">
+                  <ul className="space-y-4">
                     <li className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center">✓</div>
-                      <span className="font-medium text-gray-800">Risikovurdering (ROS) mal</span>
+                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center p-1">
+                        <CheckIcon />
+                      </div>
+                      <span className="font-medium text-slate-700">Risikovurdering (ROS) mal</span>
                     </li>
                     <li className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center">✓</div>
-                      <span className="font-medium text-gray-800">Databehandleravtale (DPA)</span>
+                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center p-1">
+                        <CheckIcon />
+                      </div>
+                      <span className="font-medium text-slate-700">Databehandleravtale (DPA)</span>
                     </li>
                     <li className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center">✓</div>
-                      <span className="font-medium text-gray-800">Personvernerklæring</span>
+                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center p-1">
+                        <CheckIcon />
+                      </div>
+                      <span className="font-medium text-slate-700">Personvernerklæring</span>
                     </li>
                     <li className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center">✓</div>
-                      <span className="font-medium text-gray-800">Avvikshåndterings-skjema</span>
+                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center p-1">
+                        <CheckIcon />
+                      </div>
+                      <span className="font-medium text-slate-700">Avvikshåndterings-skjema</span>
                     </li>
                     <li className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center">✓</div>
-                      <span className="font-medium text-gray-800">Kriseplan (Incident Response)</span>
+                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center p-1">
+                        <CheckIcon />
+                      </div>
+                      <span className="font-medium text-slate-700">Kriseplan (Incident Response)</span>
                     </li>
                   </ul>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl shadow-lg border border-orange-100 max-w-sm w-full transform rotate-3 hover:rotate-0 transition-transform duration-300">
-                  <div className="border-b-2 border-gray-100 pb-4 mb-4">
-                    <div className="h-4 bg-gray-100 rounded w-1/3 mb-2"></div>
-                    <div className="h-8 bg-gray-800 rounded w-2/3"></div>
+                <div className="bg-white p-6 rounded-2xl shadow-lg border border-slate-100 max-w-sm w-full transform rotate-3 hover:rotate-0 transition-transform duration-300">
+                  <div className="border-b-2 border-slate-50 pb-4 mb-4">
+                    <div className="h-4 bg-slate-100 rounded w-1/3 mb-2"></div>
+                    <div className="h-8 bg-slate-800 rounded w-2/3"></div>
                   </div>
                   <div className="space-y-3">
-                    <div className="h-2 bg-gray-100 rounded w-full"></div>
-                    <div className="h-2 bg-gray-100 rounded w-5/6"></div>
-                    <div className="h-2 bg-gray-100 rounded w-4/6"></div>
+                    <div className="h-2 bg-slate-100 rounded w-full"></div>
+                    <div className="h-2 bg-slate-100 rounded w-5/6"></div>
+                    <div className="h-2 bg-slate-100 rounded w-4/6"></div>
                   </div>
                   <div className="mt-8 flex justify-end">
-                    <div className="h-10 w-24 bg-orange-600 rounded-lg"></div>
+                    <div className="h-10 w-24 bg-teal-600 rounded-lg"></div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
 
         {/* Why Us Section */}
         <section id="hvorfor-oss" className="why-us section">
@@ -504,7 +517,7 @@ export default function Home() {
               </div>
             </div>
             <div className="footer-bottom">
-              <p>© 2025 Secure Clinic Journal. Laget med 💚 i Norge.</p>
+              <p>© 2025 Secure Clinic Journal. Laget i Norge.</p>
               <div className="footer-bottom-links">
                 <a href="mailto:hei@secureclinic.no">hei@secureclinic.no</a>
               </div>

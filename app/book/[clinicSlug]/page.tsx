@@ -4,12 +4,19 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { TurnstileWidget } from '@/app/components/TurnstileWidget';
 
+interface ServiceCategory {
+    slug: string;
+    name: string;
+    icon: string | null;
+}
+
 interface Service {
     id: string;
     name: string;
     description: string | null;
     durationMinutes: number;
     price: string;
+    category: ServiceCategory | null;
 }
 
 interface TimeSlot {
@@ -241,24 +248,47 @@ export default function BookingPage() {
                             <h2>Velg behandling</h2>
                             <p className="step-description">Velg hvilken tjeneste du ønsker å bestille</p>
                             <div className="service-grid">
-                                {services.map((service) => (
-                                    <button
-                                        key={service.id}
-                                        onClick={() => handleServiceSelect(service)}
-                                        className="service-card"
-                                    >
-                                        <div className="service-info">
-                                            <h3>{service.name}</h3>
-                                            {service.description && (
-                                                <p className="service-description">{service.description}</p>
+                                {/* Group services by category */}
+                                {(() => {
+                                    const grouped: { [key: string]: { category: ServiceCategory | null; services: Service[] } } = {};
+                                    services.forEach((service) => {
+                                        const key = service.category?.slug || 'other';
+                                        if (!grouped[key]) {
+                                            grouped[key] = { category: service.category, services: [] };
+                                        }
+                                        grouped[key].services.push(service);
+                                    });
+                                    return Object.entries(grouped).map(([key, group]) => (
+                                        <div key={key} className="service-category-group">
+                                            {group.category && (
+                                                <div className="category-header">
+                                                    <span className="category-icon">{group.category.icon}</span>
+                                                    <span className="category-name">{group.category.name}</span>
+                                                </div>
                                             )}
-                                            <div className="service-meta">
-                                                <span className="service-duration">🕐 {service.durationMinutes} min</span>
-                                            </div>
+                                            {group.services.map((service) => (
+                                                <button
+                                                    key={service.id}
+                                                    onClick={() => handleServiceSelect(service)}
+                                                    className="service-card"
+                                                >
+                                                    <div className="service-info">
+                                                        <h3>{service.name}</h3>
+                                                        {service.description && (
+                                                            <p className="service-description">{service.description}</p>
+                                                        )}
+                                                        <div className="service-meta">
+                                                            <span className="service-duration">🕐 {service.durationMinutes} min</span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="service-price">
+                                                        {service.price.replace(' NOK', '')}
+                                                    </div>
+                                                </button>
+                                            ))}
                                         </div>
-                                        <div className="service-price">{service.price} NOK</div>
-                                    </button>
-                                ))}
+                                    ));
+                                })()}
                             </div>
                         </div>
                     )}

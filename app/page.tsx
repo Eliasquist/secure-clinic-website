@@ -170,6 +170,7 @@ export default function Home() {
           <ul className="navbar-links">
             <li><a href="#funksjoner">Funksjoner</a></li>
             <li><a href="#sikkerhet">Sikkerhet</a></li>
+            <li><a href="/demo">Se demo</a></li>
             <li><a href="#kontakt">Kontakt</a></li>
           </ul>
           <div className="navbar-cta">

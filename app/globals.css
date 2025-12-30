@@ -21,15 +21,17 @@
   /* Soft borders */
   --color-border: #E8E4DF;
   --color-border-light: #F0EDE9;
+  --card-border: #e2e8f0;
+  /* slate-200 */
 
   /* Text colors */
-  --color-text-primary: #2C3E50;
-  --color-text-secondary: #5D6D7E;
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #64748b;
   --color-text-muted: #8B95A1;
 
   /* Gradients */
   --gradient-warm: linear-gradient(135deg, #FDFCFB 0%, #F8F6F3 100%);
-  --gradient-primary: linear-gradient(135deg, #2D9CDB 0%, #27AE60 100%);
+  --gradient-primary: linear-gradient(135deg, #0ea5e9 0%, #14b8a6 100%);
   --gradient-soft: linear-gradient(180deg, rgba(45, 156, 219, 0.05) 0%, transparent 100%);
 
   /* Typography */

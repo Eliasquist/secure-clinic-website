@@ -46,7 +46,7 @@ export default function IntegrationPage() {
                     <section className="grid md:grid-cols-2 gap-12 items-center">
                         <div>
                             <div className="inline-block px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-semibold mb-4">
-                                🔄 Flyttehjelp
+                                Flyttehjelp
                             </div>
                             <h2 className="heading-2">Bytte fra gammelt system?</h2>
                             <p className="text-gray-600 mb-6 leading-relaxed">
@@ -76,11 +76,8 @@ export default function IntegrationPage() {
                                 </li>
                             </ul>
                         </div>
-                        <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-lg relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-4 opacity-10">
-                                <svg width="120" height="120" viewBox="0 0 24 24" fill="currentColor"><path d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg>
-                            </div>
-                            <h3 className="text-lg font-bold mb-4">Vi støtter import fra:</h3>
+                        <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
+                            <h3 className="text-lg font-bold mb-4 text-gray-900">Vi støtter import fra:</h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="p-4 bg-gray-50 rounded border border-gray-100 text-center font-medium text-gray-600">PatientSky</div>
                                 <div className="p-4 bg-gray-50 rounded border border-gray-100 text-center font-medium text-gray-600">Helseboka</div>
@@ -147,36 +144,45 @@ export default function IntegrationPage() {
                     {/* Section 2: Website Integration */}
                     <section className="grid md:grid-cols-2 gap-12 items-center">
                         <div className="order-2 md:order-1">
-                            <div className="bg-gray-900 p-8 rounded-2xl shadow-xl text-white">
+                            <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
+                                {/* Direkte lenke */}
                                 <div className="mb-8">
-                                    <h3 className="text-gray-300 font-semibold mb-2 text-sm uppercase tracking-wider">Alternativ 1: Direkte Lenke</h3>
-                                    <div className="bg-black/30 p-4 rounded-lg font-mono text-sm text-gray-200 break-all border border-gray-700">
-                                        https://secure-clinic.com/book/din-klinikk
+                                    <h3 className="text-slate-900 font-semibold mb-2 text-sm uppercase tracking-wider">Alternativ 1: Direkte Lenke</h3>
+                                    <div className="relative">
+                                        <div className="bg-slate-50 border border-slate-200 p-4 rounded-lg font-mono text-sm text-slate-700 break-all">
+                                            https://secure-clinic.com/book/din-klinikk
+                                        </div>
                                     </div>
-                                    <p className="text-gray-400 text-sm mt-2">Perfekt for Instagram bio eller 'Bestill time'-knapp.</p>
+                                    <p className="text-slate-600 text-sm mt-2">Perfekt for Instagram bio eller 'Bestill time'-knapp.</p>
                                 </div>
 
+                                {/* iFrame */}
+                                <div className="mb-8">
+                                    <h3 className="text-slate-900 font-semibold mb-2 text-sm uppercase tracking-wider">Alternativ 2: iFrame Widget</h3>
+                                    <div className="relative">
+                                        <div className="bg-slate-50 border border-slate-200 p-4 rounded-lg font-mono text-sm text-slate-700 break-all overflow-x-auto">
+                                            &lt;iframe src="https://secure-clinic.com/book/..." <br /> width="100%" height="600" /&gt;
+                                        </div>
+                                    </div>
+                                    <p className="text-slate-600 text-sm mt-2">Lim inn rett på nettsiden din (WordPress, Squarespace, Wix). Fungerer med HTTPS.</p>
+                                </div>
+
+                                {/* Bestillingsknapp */}
                                 <div>
-                                    <h3 className="text-gray-300 font-semibold mb-2 text-sm uppercase tracking-wider">Alternativ 2: Iframe Widget</h3>
-                                    <div className="bg-black/30 p-4 rounded-lg font-mono text-sm text-gray-200 break-all border border-gray-700">
-                                        &lt;iframe src="https://secure-clinic.com/book/..." <br /> width="100%" height="600" /&gt;
+                                    <h3 className="text-slate-900 font-semibold mb-2 text-sm uppercase tracking-wider">Alternativ 3: Bestillingsknapp</h3>
+                                    <div className="relative">
+                                        <div className="bg-slate-50 border border-slate-200 p-4 rounded-lg font-mono text-sm text-slate-700 break-all">
+                                            &lt;a href="https://secure-clinic.com/book/din-klinikk" target="_blank"&gt;Bestill time&lt;/a&gt;
+                                        </div>
                                     </div>
-                                    <p className="text-gray-400 text-sm mt-2">Lim inn rett på nettsiden din (WordPress, Squarespace, Wix). Fungerer med HTTPS.</p>
-                                </div>
-
-                                <div className="mt-8">
-                                    <h3 className="text-gray-300 font-semibold mb-2 text-sm uppercase tracking-wider">Alternativ 3: Bestillingsknapp</h3>
-                                    <div className="bg-black/30 p-4 rounded-lg font-mono text-sm text-gray-200 break-all border border-gray-700">
-                                        &lt;a href="https://secure-clinic.com/book/din-klinikk" target="_blank"&gt;Bestill time&lt;/a&gt;
-                                    </div>
-                                    <p className="text-gray-400 text-sm mt-2">Enkel knapp som åpner booking i ny fane. Kan styles fritt.</p>
+                                    <p className="text-slate-600 text-sm mt-2">Enkel knapp som åpner booking i ny fane. Kan styles fritt.</p>
                                 </div>
                             </div>
                         </div>
 
                         <div className="order-1 md:order-2">
                             <div className="inline-block px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-sm font-semibold mb-4">
-                                🔌 Integrasjon
+                                Integrasjon
                             </div>
                             <h2 className="heading-2">Koble til nettsiden din</h2>
                             <p className="text-gray-600 mb-6 leading-relaxed">
@@ -268,7 +274,7 @@ export default function IntegrationPage() {
                                 </p>
                             </div>
                             <div className="bg-white p-6 rounded-xl border border-gray-200">
-                                <h4 className="font-bold text-gray-900 mb-2">🛡️ Sikkerhet & integritet</h4>
+                                <h4 className="font-bold text-gray-900 mb-2">Sikkerhet & integritet</h4>
                                 <p className="text-sm text-gray-600">
                                     Alle importerte notater blir automatisk tidsstemplet og merket <strong>"Historisk Data"</strong>. De kan leses, men ikke endres, for å bevare integriteten.
                                 </p>

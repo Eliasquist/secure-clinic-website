@@ -163,7 +163,13 @@ export default function IntegrationPage() {
       "first_name": "Ola",
       "last_name": "Nordmann",
       "phone": "+4790000000",
+      "email": "ola@eksempel.no",
       "birth_date": "1990-01-01", 
+      "address": {
+        "street": "Storgata 1",
+        "zip": "0150",
+        "city": "Oslo"
+      },
       "history": {
         "allergies": "None",
         "medications": "None"

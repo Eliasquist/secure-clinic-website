@@ -2025,11 +2025,11 @@ body {
 }
 
 .da-input-label {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
-  color: #6b7280;
-  margin-bottom: 8px;
+  color: #9ca3af;
+  margin-bottom: 6px;
   letter-spacing: 0.05em;
   display: block;
 }

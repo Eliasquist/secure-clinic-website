@@ -406,9 +406,7 @@ export default function DemoPage() {
                         {/* Sidebar */}
                         <div className="da-sidebar">
                             <div className="da-sidebar-brand">
-                                <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
-                                    SC
-                                </div>
+                                <Image src="/logo.png" width={24} height={24} alt="Logo" className="mr-2" />
                                 Secure Clinic
                             </div>
 

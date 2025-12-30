@@ -1422,6 +1422,32 @@ body {
   margin: 0 auto;
 }
 
+/* Demo Banner */
+.demo-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+  border: 2px solid #F59E0B;
+  border-radius: var(--border-radius-sm);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  color: #92400E;
+  font-size: 14px;
+}
+
+.demo-banner-icon {
+  font-size: 24px;
+}
+
+.demo-banner strong {
+  color: #78350F;
+}
+
+.demo-banner span {
+  opacity: 0.9;
+}
+
 .booking-header {
   text-align: center;
   margin-bottom: 32px;

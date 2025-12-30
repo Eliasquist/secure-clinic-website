@@ -199,6 +199,15 @@ export default function BookingPage() {
     return (
         <div className="booking-page">
             <div className="booking-container">
+                {/* Demo Banner */}
+                <div className="demo-banner">
+                    <span className="demo-banner-icon">🧪</span>
+                    <div>
+                        <strong>Dette er en demo</strong>
+                        <span> — Utforsk hvordan booking-systemet fungerer. Ingen ekte avtaler opprettes.</span>
+                    </div>
+                </div>
+
                 {/* Header */}
                 <div className="booking-header">
                     <h1>{clinic.name}</h1>

@@ -26,7 +26,6 @@ export default function StarterKitPage() {
                         <li><Link href="/#funksjoner">Funksjoner</Link></li>
                         <li><Link href="/demo">Se demo</Link></li>
                         <li><Link href="/startpakke" className="active">Startpakke</Link></li>
-                        <li><Link href="/integrasjon">Integrasjon</Link></li>
                         <li><Link href="/#kontakt">Kontakt</Link></li>
                     </ul>
                     <div className="navbar-cta">

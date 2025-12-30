@@ -172,7 +172,6 @@ export default function Home() {
             <li><a href="#sikkerhet">Sikkerhet</a></li>
             <li><a href="/demo">Se demo</a></li>
             <li><a href="/startpakke">Startpakke</a></li>
-            <li><a href="/integrasjon">Integrasjon</a></li>
             <li><a href="#kontakt">Kontakt</a></li>
           </ul>
           <div className="navbar-cta">

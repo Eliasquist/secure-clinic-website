@@ -102,38 +102,32 @@ const FaceMapReplica = ({ activeZone, onZoneClick }: { activeZone: string | null
 // Journal Replica
 const JournalReplica = () => {
     const [selectedZone, setSelectedZone] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState('all');
 
     return (
-        <div className="da-card-container">
+        <div className="da-journal-grid">
             {/* Left: Map */}
             <div className="da-journal-left">
-                <div className="da-toggle-group">
-                    <div
-                        className={`da-toggle-item ${activeTab === 'all' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('all')}
-                    >All</div>
-                    <div
-                        className={`da-toggle-item ${activeTab === 'muscles' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('muscles')}
-                    >Muskler</div>
-                    <div
-                        className={`da-toggle-item ${activeTab === 'volume' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('volume')}
-                    >Volum</div>
+                <div className="flex gap-2 mb-4 text-xs w-full justify-center">
+                    <span className="px-2 py-1 rounded bg-gray-800 text-white">Alle</span>
+                    <span className="px-2 py-1 rounded bg-red-100 text-red-800">Muskler</span>
+                    <span className="px-2 py-1 rounded bg-blue-100 text-blue-800">Volum</span>
                 </div>
                 <FaceMapReplica activeZone={selectedZone} onZoneClick={setSelectedZone} />
             </div>
 
             {/* Right: Details */}
             <div className="da-journal-right">
-                <div className="da-status-row">
-                    <span className="da-input-label" style={{ marginBottom: 0 }}>Status</span>
-                    <span className="text-sm font-medium text-gray-900">Utkast under arbeid</span>
+                <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
+                    <div>
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Status</span>
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-50 text-yellow-800 border border-yellow-200">
+                            Utkast under arbeid
+                        </span>
+                    </div>
                 </div>
 
                 <div className="da-input-group">
-                    <label className="da-input-label">1. Anamnese & Vurdering</label>
+                    <label className="da-section-title block">1. Anamnese & Vurdering</label>
                     <textarea
                         className="da-textarea"
                         defaultValue="Pasienten ønsker å behandle 'sinnarynken' (glabella). Ingen kontraindikasjoner."
@@ -141,7 +135,7 @@ const JournalReplica = () => {
                 </div>
 
                 <div className="da-input-group">
-                    <label className="da-input-label">2. Behandling</label>
+                    <label className="da-section-title block">2. Behandling</label>
                     <table className="da-table">
                         <thead>
                             <tr>
@@ -318,7 +312,6 @@ export default function DemoPage() {
                     <ul className="navbar-links">
                         <li><Link href="/#funksjoner">Funksjoner</Link></li>
                         <li><Link href="/startpakke">Startpakke</Link></li>
-                        <li><Link href="/integrasjon">Integrasjon</Link></li>
                         <li><Link href="/#sikkerhet">Sikkerhet</Link></li>
                         <li><Link href="/#kontakt">Kontakt</Link></li>
                     </ul>
@@ -372,35 +365,20 @@ export default function DemoPage() {
                         </div>
 
                         <div className="demo-booking-info">
-                            <h3>Slik fungerer det</h3>
-                            <div className="space-y-6 mt-6">
-                                <div className="flex gap-4">
-                                    <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold flex-shrink-0">1</div>
-                                    <div>
-                                        <h4 className="font-bold text-gray-900">Pasienten bestiller</h4>
-                                        <p className="text-sm text-gray-600">Pasienten finner en ledig tid som passer i din kalender.</p>
-                                    </div>
+                            <h3>Integrasjon</h3>
+                            <div className="integration-grid" style={{ marginTop: '20px', gap: '16px', gridTemplateColumns: '1fr' }}>
+                                <div className="integration-card" style={{ padding: '20px' }}>
+                                    <h3 style={{ fontSize: '16px' }}>Direkte Lenke</h3>
+                                    <code style={{ fontSize: '12px', display: 'block', background: '#1e293b', padding: '10px', borderRadius: '6px', color: '#e2e8f0' }}>
+                                        https://secure-clinic.com/book/din-klinikk
+                                    </code>
                                 </div>
-                                <div className="flex gap-4">
-                                    <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold flex-shrink-0">2</div>
-                                    <div>
-                                        <h4 className="font-bold text-gray-900">Bekreftelse på SMS</h4>
-                                        <p className="text-sm text-gray-600">Både du og pasienten mottar umiddelbart en bekreftelse.</p>
-                                    </div>
+                                <div className="integration-card" style={{ padding: '20px' }}>
+                                    <h3 style={{ fontSize: '16px' }}>Iframe Widget</h3>
+                                    <code style={{ fontSize: '12px', display: 'block', background: '#1e293b', padding: '10px', borderRadius: '6px', color: '#e2e8f0' }}>
+                                        &lt;iframe src="..." /&gt;
+                                    </code>
                                 </div>
-                                <div className="flex gap-4">
-                                    <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold flex-shrink-0">3</div>
-                                    <div>
-                                        <h4 className="font-bold text-gray-900">Journal opprettes</h4>
-                                        <p className="text-sm text-gray-600">Når pasienten kommer, er journalen allerede klargjort for deg.</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="mt-8 pt-6 border-t border-gray-100">
-                                <Link href="/integrasjon" className="text-brand-600 text-sm font-semibold hover:underline flex items-center gap-1">
-                                    Se hvordan du kobler dette til din nettside <span aria-hidden="true">&rarr;</span>
-                                </Link>
                             </div>
                         </div>
                     </div>
@@ -421,8 +399,8 @@ export default function DemoPage() {
                     <div className="desktop-app-replica shadow-2xl border border-gray-200">
                         {/* Sidebar */}
                         <div className="da-sidebar">
-                            <div className="da-sidebar-brand">
-                                <Image src="/logo.png" width={24} height={24} alt="Logo" className="mr-2" />
+                            <div className="mb-6 px-2 font-bold text-gray-900 flex items-center gap-2">
+                                <Image src="/logo.png" width={24} height={24} alt="Logo" />
                                 Secure Clinic
                             </div>
 

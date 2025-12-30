@@ -306,7 +306,6 @@ export default function Home() {
       <section className="section bg-warm">
         <div className="container">
           <div className="max-w-4xl mx-auto">
-            {/* Changed from orange to Teal/Slate for a cleaner, professional look */}
             <div className="bg-slate-50 rounded-3xl border border-slate-200 p-8 md:p-12 relative overflow-hidden shadow-sm">
               <div className="absolute top-0 right-0 p-8 opacity-5">
                 <ShieldIcon />

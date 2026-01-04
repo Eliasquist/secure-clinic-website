@@ -96,22 +96,27 @@ I Phase 1 er kun portal downloads subscription-gated.
 
 ## 8) Stripe webhook policy (test mode nå, live senere)
 
-### Webhook endpoint
-
-* `POST /api/stripe/webhook`
-* Verifiser Stripe-signatur (raw body)
-* Idempotens:
-  * Lagre `eventId` i processedEvents Set
-  * Hvis eventId finnes → return `200` og gjør ingenting
-
-### Events dere håndterer i Phase 1
-
-* `checkout.session.completed`
-* `customer.subscription.created`
-* `customer.subscription.updated`
-* `customer.subscription.deleted`
-* `invoice.paid`
-* `invoice.payment_failed`
+###4.  **Webhook Policy**:
+    *   **Endpoint**: `POST /api/stripe/webhook`
+    *   **Security**: Verify Stripe Signature (`stripe-signature` header).
+    *   **Idempotency (Two-Phase)**:
+        *   1. Set key `stripe:event:{id}` to "processing" (TTL 10m, NX=true).
+        *   2. Process event.
+        *   3. If success: Set key to "done" (TTL 30 days).
+        *   4. If error/crash: Delete key (allow Stripe retry).
+    *   **Handlers**:
+        *   `checkout.session.completed` -> `activateSubscription`
+        *   `customer.subscription.created` -> Sync mapping if exists
+        *   `customer.subscription.updated` -> `updateSubscriptionStatus` (Explicit Mapping)
+        *   `customer.subscription.deleted` -> `CANCELED`
+        *   `invoice.paid` -> `ACTIVE`
+        *   `invoice.payment_failed` -> `PAST_DUE`
+    *   **Status Mapping**:
+        *   `active` -> `ACTIVE`
+        *   `trialing` -> `TRIALING`
+        *   `past_due`/`unpaid` -> `PAST_DUE`
+        *   `canceled` -> `CANCELED`
+        *   Others -> `INACTIVE`
 
 ### Mapping til DB-status
 

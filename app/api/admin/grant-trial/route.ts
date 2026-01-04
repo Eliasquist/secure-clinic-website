@@ -13,8 +13,15 @@ export async function POST(request: NextRequest) {
 
         const userEmail = session.user.email;
 
-        // 2. Authorization check (Superadmin)
-        // Load allowed emails from env var, defaulting to empty if not set
+        // 2. CSRF Protection Check
+        // Require a custom header to prevent simple cross-site POSTs
+        const actionHeader = request.headers.get('x-admin-action');
+        if (actionHeader !== 'grant-trial') {
+            console.warn(`🛑 Missing or invalid X-Admin-Action header from ${userEmail}`);
+            return NextResponse.json({ error: 'Missing security header' }, { status: 403 });
+        }
+
+        // 3. Authorization check (Superadmin)
         const allowedEmailsStr = process.env.SUPERADMIN_EMAILS || '';
         const allowedEmails = allowedEmailsStr.split(',').map(e => e.trim().toLowerCase());
 
@@ -28,7 +35,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 
-        // 3. Parse and Validate Request
+        // 4. Parse and Validate Request
         const body = await request.json();
         const { tenantId, days = 14, seatLimit = 1 } = body;
 
@@ -36,7 +43,6 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Missing or invalid tenantId' }, { status: 400 });
         }
 
-        // Operational Limits (Safety)
         if (days > 60) {
             return NextResponse.json({ error: 'Days cannot exceed 60' }, { status: 400 });
         }
@@ -44,28 +50,28 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Seat limit cannot exceed 50 for manual trials' }, { status: 400 });
         }
 
-        // 4. Grant trial
+        // 5. Grant trial
         const access = await grantTrial(tenantId, days, seatLimit);
 
-        // 5. Log the action (Audit)
+        // 6. Log the action (Audit)
         const logEntry: AccessChangeLog = {
             timestamp: new Date(),
             tenantId,
             action: 'GRANT_TRIAL',
-            oldStatus: null, // Unknown/New
+            oldStatus: null,
             newStatus: 'TRIALING',
             source: 'MANUAL',
-            actorEmail: userEmail,
+            actorEmail: userEmail, // Explicitly logging WHO did it
             metadata: { days, seatLimit }
         };
         accessChangeLogs.push(logEntry);
 
-        console.log(`👮 Admin ${userEmail} granted trial to ${tenantId}`);
+        console.log(`👮 Admin ${userEmail} granted trial to ${tenantId} (${days} days)`);
 
         return NextResponse.json({
             success: true,
             access,
-            message: `Trial granted for ${days} days with ${seatLimit} seats.`
+            message: `Trial granted for ${days} days.`
         });
 
     } catch (error) {

@@ -12,7 +12,7 @@ import {
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
-// Helper to map Stripe status to our AccessStatus
+// Helper to map Stripe status to our AccessStatus (Explicit Mapping)
 function mapStripeStatus(status: string): AccessStatus {
     switch (status) {
         case 'active': return 'ACTIVE';
@@ -48,19 +48,30 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
     }
 
-    // IDEMPOTENCY check using Vercel KV
+    // IDEMPOTENCY: Two-Phase Commit Pattern
+    // 1. Set "processing" (Short TTL) - NX ensures we only process once
     const idempotencyKey = `stripe:event:${event.id}`;
+
+    // Fail-Closed check for KV in production
+    if (process.env.NODE_ENV === 'production' && !process.env.KV_REST_API_URL) {
+        console.error('CRITICAL: KV not configured in production. Cannot handle webhook idempotency.');
+        return NextResponse.json({ error: 'System Configuration Error' }, { status: 503 });
+    }
+
     try {
-        // NX: true (only set if not exists), EX: 86400 (expire in 24h)
-        const isNew = await kv.set(idempotencyKey, '1', { nx: true, ex: 86400 });
+        // NX: true (only set if not exists), EX: 600 (10 min processing timeout)
+        // If key exists (processing or done), we skip.
+        // If "processing" expires (crash), we can retry safely after 10m.
+        const isNew = await kv.set(idempotencyKey, 'processing', { nx: true, ex: 600 });
 
         if (!isNew) {
-            console.log(`⏭️ Skipping already processed event: ${event.id}`);
+            console.log(`⏭️ Skipping already processed/processing event: ${event.id}`);
             return NextResponse.json({ received: true, skipped: true });
         }
     } catch (error) {
-        console.warn('⚠️ KV idempotency check failed (falling back to process-always):', error);
-        // Note: In strict prod, we might want to fail here. For MVP, we proceed but log valid warning.
+        // If KV fails in prod, we must 500 so Stripe retries later when KV might be up
+        console.error('❌ KV error during idempotency check:', error);
+        return NextResponse.json({ error: 'Idempotency check failed' }, { status: 503 });
     }
 
     console.log(`📥 Received webhook: ${event.type} (${event.id})`);
@@ -74,15 +85,9 @@ export async function POST(request: NextRequest) {
                 const tenantId = session.metadata?.tenantId || session.client_reference_id || '';
 
                 if (!tenantId) {
-                    console.error('❌ No tenantId in checkout session!');
-                    // We throw error to ensure Stripe retries (and we don't mark as processed via 200)
-                    // But wait, if we threw above, we already set the idempotency key?
-                    // Ideally we should set idempotency AFTER success, or use a "processing" state.
-                    // However, standard pattern: if we fail here, we should probably DELETE the key or let it remain processed?
-                    // Actually, if we fail, Stripe retries. If we set key, next retry is skipped.
-                    // FIX: Delete idempotency key if crucial processing fails.
-                    await kv.del(idempotencyKey);
-                    return NextResponse.json({ error: 'Missing tenantId' }, { status: 400 });
+                    console.error('❌ No tenantId in checkout session! Throwing to retry.');
+                    // Throw error to trigger catch block -> delete key -> return 500 -> Stripe retry
+                    throw new Error('Missing tenantId in checkout session');
                 }
 
                 const subscription = await stripe.subscriptions.retrieve(subscriptionId) as any;
@@ -96,7 +101,7 @@ export async function POST(request: NextRequest) {
                     timestamp: new Date(),
                     tenantId,
                     action: 'ACTIVATE',
-                    oldStatus: 'TRIALING', // Assumption: coming from trial or new
+                    oldStatus: 'TRIALING',
                     newStatus: 'ACTIVE',
                     source: 'STRIPE',
                     metadata: { subscriptionId, quantity },
@@ -107,17 +112,32 @@ export async function POST(request: NextRequest) {
                 break;
             }
 
-            case 'customer.subscription.created':
+            case 'customer.subscription.created': {
+                // Only map if we already know the customer (race condition handling)
+                const subscription = event.data.object as any;
+                const customerId = subscription.customer as string;
+
+                const existing = await getTenantAccessByCustomer(customerId);
+                if (existing) {
+                    const quantity = subscription.items?.data[0]?.quantity || existing.seatLimit;
+                    const activeUntil = new Date(subscription.current_period_end * 1000);
+                    const newStatus = mapStripeStatus(subscription.status);
+                    await updateSubscriptionStatus(existing.tenantId, newStatus, activeUntil, quantity);
+                    console.log(`✅ Subscription created/synced for tenant ${existing.tenantId}: ${newStatus}`);
+                } else {
+                    console.log(`ℹ️ Unmapped customer created: ${customerId} (waiting for checkout completion)`);
+                }
+                break;
+            }
+
             case 'customer.subscription.updated': {
                 const subscription = event.data.object as any;
                 const customerId = subscription.customer as string;
 
                 const existing = await getTenantAccessByCustomer(customerId);
                 if (!existing) {
-                    // Usually harmless for 'created' if checkout hasn't finished, OR if we don't have mapping yet.
-                    // For 'created', checkout.session.completed normally handles creation.
-                    // We log warning but don't fail, to avoid retry loops on unmapped customers.
                     console.warn(`⚠️ Subscription update for unknown customer: ${customerId}`);
+                    // We don't throw here, as it might be a zombie event or test data
                     break;
                 }
 
@@ -126,7 +146,7 @@ export async function POST(request: NextRequest) {
                 const newStatus = mapStripeStatus(subscription.status);
 
                 await updateSubscriptionStatus(existing.tenantId, newStatus, activeUntil, quantity);
-                console.log(`✅ Subscription synced for tenant ${existing.tenantId}: ${newStatus}`);
+                console.log(`✅ Subscription updated for tenant ${existing.tenantId}: ${newStatus}`);
                 break;
             }
 
@@ -174,14 +194,30 @@ export async function POST(request: NextRequest) {
                 console.log(`ℹ️ Unhandled event type: ${event.type}`);
         }
 
+        // 2. Mark as DONE (Long TTL)
+        // If we reach here, processing succeeded. Update key to 'done' valid for 30 days.
+        try {
+            await kv.set(idempotencyKey, 'done', { ex: 60 * 60 * 24 * 30 }); // 30 days
+        } catch (kvError) {
+            console.error('⚠️ Failed to mark event as done in KV (but processing succeeded)', kvError);
+            // We don't fail the request here, as the action was performed.
+            // Worst case: double processing on retry, which updates are idempotent-ish.
+        }
+
         return NextResponse.json({ received: true });
+
     } catch (error) {
         console.error('❌ Webhook handler error:', error);
 
-        // Critical: If processing failed, we want Stripe to retry.
-        // We MUST delete the idempotency key so the retry isn't skipped.
-        await kv.del(idempotencyKey);
+        // Critical: Delete idempotency key so Stripe retry is allowed.
+        try {
+            await kv.del(idempotencyKey);
+            console.log('🗑️ Deleted idempotency key to allow retry');
+        } catch (delError) {
+            console.error('☠️ Failed to delete idempotency key during error handling', delError);
+        }
 
-        return NextResponse.json({ error: 'Webhook handler failed' }, { status: 500 });
+        // Return 500 to trigger Stripe retry
+        return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 });
     }
 }

@@ -108,18 +108,32 @@ function deserialize(data: any): TenantAccess | null {
     };
 }
 
+// Helper to check KV availability
+function isKvConfigured() {
+    return !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
+}
+
 export async function getTenantAccess(tenantId: string): Promise<TenantAccess | null> {
+    // STRICT PROD CHECK: Fail if KV is missing in production
+    if (process.env.NODE_ENV === 'production' && !isKvConfigured()) {
+        throw new Error('CRITICAL: Vercel KV is not configured in production. Cannot fetch tenant access safely.');
+    }
+
     try {
-        // Try KV first
-        if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+        // Try KV first (or required if prod)
+        if (isKvConfigured()) {
             const data = await kv.get<TenantAccess>(getKey(tenantId));
             if (data) return deserialize(data);
         }
     } catch (error) {
+        if (process.env.NODE_ENV === 'production') {
+            // In prod, if KV fails, we MUST throw. Falling back to memory is dangerous (data loss).
+            throw error;
+        }
         console.warn('KV get failed, falling back to memory', error);
     }
 
-    // Fallback to memory
+    // Fallback to memory (Dev/Test only)
     const access = memoryStore.get(tenantId);
     return access ? deserialize(access) : null;
 }
@@ -127,15 +141,23 @@ export async function getTenantAccess(tenantId: string): Promise<TenantAccess | 
 export async function setTenantAccess(access: TenantAccess): Promise<void> {
     access.updatedAt = new Date();
 
-    // Update memory
+    // Update memory (always useful for dev/cache)
     memoryStore.set(access.tenantId, access);
+
+    // STRICT PROD CHECK: Fail if KV is missing in production
+    if (process.env.NODE_ENV === 'production' && !isKvConfigured()) {
+        throw new Error('CRITICAL: Vercel KV is not configured in production. Cannot save tenant access safely.');
+    }
 
     // Update KV
     try {
-        if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+        if (isKvConfigured()) {
             await kv.set(getKey(access.tenantId), access);
         }
     } catch (error) {
+        if (process.env.NODE_ENV === 'production') {
+            throw error;
+        }
         console.warn('KV set failed', error);
     }
 }

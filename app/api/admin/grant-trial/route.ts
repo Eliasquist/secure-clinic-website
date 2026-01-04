@@ -1,121 +1,75 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { grantTrial, accessChangeLogs, AccessChangeLog } from '@/lib/tenant-access';
-
-// List of superadmin emails (in production, use role claims from Entra)
-const SUPERADMIN_EMAILS = [
-    'elias@secureclinic.no',
-    'admin@secureclinic.no',
-    // Add your email here
-];
-
-function isSuperAdmin(email: string | null | undefined): boolean {
-    if (!email) return false;
-    return SUPERADMIN_EMAILS.includes(email.toLowerCase());
-}
+import { grantTrial, AccessChangeLog, accessChangeLogs } from '@/lib/tenant-access';
 
 export async function POST(request: NextRequest) {
     try {
-        // Auth check
         const session = await auth();
 
-        if (!session?.user?.email) {
-            return NextResponse.json(
-                { error: 'Authentication required' },
-                { status: 401 }
-            );
+        // 1. Authentication check
+        if (!session || !session.user || !session.user.email) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // Superadmin check
-        if (!isSuperAdmin(session.user.email)) {
-            console.warn(`⚠️ Unauthorized grant-trial attempt by ${session.user.email}`);
-            return NextResponse.json(
-                { error: 'Superadmin access required' },
-                { status: 403 }
-            );
+        const userEmail = session.user.email;
+
+        // 2. Authorization check (Superadmin)
+        // Load allowed emails from env var, defaulting to empty if not set
+        const allowedEmailsStr = process.env.SUPERADMIN_EMAILS || '';
+        const allowedEmails = allowedEmailsStr.split(',').map(e => e.trim().toLowerCase());
+
+        if (allowedEmails.length === 0) {
+            console.error('❌ SUPERADMIN_EMAILS env var is missing or empty.');
+            return NextResponse.json({ error: 'Configuration error' }, { status: 500 });
         }
 
-        // Parse request
-        const { tenantId, days = 14, seatLimit = 1 } = await request.json();
-
-        if (!tenantId) {
-            return NextResponse.json(
-                { error: 'tenantId is required' },
-                { status: 400 }
-            );
+        if (!allowedEmails.includes(userEmail.toLowerCase())) {
+            console.warn(`🛑 Unauthorized trial grant attempt by ${userEmail}`);
+            return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 
-        if (days < 1 || days > 90) {
-            return NextResponse.json(
-                { error: 'days must be between 1 and 90' },
-                { status: 400 }
-            );
+        // 3. Parse and Validate Request
+        const body = await request.json();
+        const { tenantId, days = 14, seatLimit = 1 } = body;
+
+        if (!tenantId || typeof tenantId !== 'string') {
+            return NextResponse.json({ error: 'Missing or invalid tenantId' }, { status: 400 });
         }
 
-        if (seatLimit < 1 || seatLimit > 100) {
-            return NextResponse.json(
-                { error: 'seatLimit must be between 1 and 100' },
-                { status: 400 }
-            );
+        // Operational Limits (Safety)
+        if (days > 60) {
+            return NextResponse.json({ error: 'Days cannot exceed 60' }, { status: 400 });
+        }
+        if (seatLimit > 50) {
+            return NextResponse.json({ error: 'Seat limit cannot exceed 50 for manual trials' }, { status: 400 });
         }
 
-        // Grant trial
+        // 4. Grant trial
         const access = await grantTrial(tenantId, days, seatLimit);
 
-        // Log the action
+        // 5. Log the action (Audit)
         const logEntry: AccessChangeLog = {
             timestamp: new Date(),
             tenantId,
             action: 'GRANT_TRIAL',
-            oldStatus: null,
+            oldStatus: null, // Unknown/New
             newStatus: 'TRIALING',
             source: 'MANUAL',
-            actorEmail: session.user.email,
-            metadata: { days, seatLimit },
+            actorEmail: userEmail,
+            metadata: { days, seatLimit }
         };
         accessChangeLogs.push(logEntry);
 
-        console.log(`✅ Trial granted by ${session.user.email} to tenant ${tenantId} for ${days} days`);
+        console.log(`👮 Admin ${userEmail} granted trial to ${tenantId}`);
 
         return NextResponse.json({
             success: true,
-            access: {
-                tenantId: access.tenantId,
-                status: access.status,
-                trialEndsAt: access.trialEndsAt?.toISOString(),
-                seatLimit: access.seatLimit,
-            },
+            access,
+            message: `Trial granted for ${days} days with ${seatLimit} seats.`
         });
+
     } catch (error) {
-        console.error('Grant trial error:', error);
-        return NextResponse.json(
-            { error: 'Failed to grant trial' },
-            { status: 500 }
-        );
-    }
-}
-
-// GET: List recent access changes (for audit)
-export async function GET(request: NextRequest) {
-    try {
-        const session = await auth();
-
-        if (!session?.user?.email || !isSuperAdmin(session.user.email)) {
-            return NextResponse.json(
-                { error: 'Superadmin access required' },
-                { status: 403 }
-            );
-        }
-
-        // Return last 50 access changes
-        const recentLogs = accessChangeLogs.slice(-50).reverse();
-
-        return NextResponse.json({ logs: recentLogs });
-    } catch (error) {
-        console.error('Get access logs error:', error);
-        return NextResponse.json(
-            { error: 'Failed to get access logs' },
-            { status: 500 }
-        );
+        console.error('Grant manual trial error:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }

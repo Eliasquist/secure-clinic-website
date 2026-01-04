@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { headers } from 'next/headers';
+import { kv } from '@vercel/kv';
 import { stripe, isStripeConfigured } from '@/lib/stripe';
 import {
     getTenantAccessByCustomer,
@@ -7,24 +7,25 @@ import {
     updateSubscriptionStatus,
     accessChangeLogs,
     AccessChangeLog,
+    AccessStatus
 } from '@/lib/tenant-access';
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
-// Idempotency: Track processed event IDs (in-memory, use Redis in production)
-const processedEvents = new Set<string>();
-
-// Event log for audit
-interface StripeEventLog {
-    eventId: string;
-    eventType: string;
-    stripeCustomerId: string;
-    tenantId: string;
-    timestamp: Date;
-    processed: boolean;
-    error?: string;
+// Helper to map Stripe status to our AccessStatus
+function mapStripeStatus(status: string): AccessStatus {
+    switch (status) {
+        case 'active': return 'ACTIVE';
+        case 'trialing': return 'TRIALING';
+        case 'past_due': return 'PAST_DUE';
+        case 'unpaid': return 'PAST_DUE';
+        case 'canceled': return 'CANCELED';
+        case 'incomplete': return 'INACTIVE';
+        case 'incomplete_expired': return 'INACTIVE';
+        case 'paused': return 'INACTIVE';
+        default: return 'INACTIVE';
+    }
 }
-const stripeEventLogs: StripeEventLog[] = [];
 
 export async function POST(request: NextRequest) {
     if (!isStripeConfigured()) {
@@ -32,8 +33,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.text();
-    const headersList = await headers();
-    const signature = headersList.get('stripe-signature');
+    const signature = request.headers.get('stripe-signature');
 
     if (!signature) {
         return NextResponse.json({ error: 'No signature' }, { status: 400 });
@@ -41,7 +41,6 @@ export async function POST(request: NextRequest) {
 
     let event;
 
-    // STEP 1: Verify Stripe signature
     try {
         event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
     } catch (err) {
@@ -49,124 +48,104 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
     }
 
-    // STEP 2: Idempotency check
-    if (processedEvents.has(event.id)) {
-        console.log(`⏭️ Skipping already processed event: ${event.id}`);
-        return NextResponse.json({ received: true, skipped: true });
+    // IDEMPOTENCY check using Vercel KV
+    const idempotencyKey = `stripe:event:${event.id}`;
+    try {
+        // NX: true (only set if not exists), EX: 86400 (expire in 24h)
+        const isNew = await kv.set(idempotencyKey, '1', { nx: true, ex: 86400 });
+
+        if (!isNew) {
+            console.log(`⏭️ Skipping already processed event: ${event.id}`);
+            return NextResponse.json({ received: true, skipped: true });
+        }
+    } catch (error) {
+        console.warn('⚠️ KV idempotency check failed (falling back to process-always):', error);
+        // Note: In strict prod, we might want to fail here. For MVP, we proceed but log valid warning.
     }
 
     console.log(`📥 Received webhook: ${event.type} (${event.id})`);
 
-    // STEP 3: Process the event
-    const logEntry: StripeEventLog = {
-        eventId: event.id,
-        eventType: event.type,
-        stripeCustomerId: '',
-        tenantId: '',
-        timestamp: new Date(),
-        processed: false,
-    };
-
     try {
         switch (event.type) {
-            // Checkout completed - activate subscription
             case 'checkout.session.completed': {
                 const session = event.data.object as any;
                 const subscriptionId = session.subscription as string;
                 const customerId = session.customer as string;
                 const tenantId = session.metadata?.tenantId || session.client_reference_id || '';
 
-                logEntry.stripeCustomerId = customerId;
-                logEntry.tenantId = tenantId;
-
                 if (!tenantId) {
                     console.error('❌ No tenantId in checkout session!');
-                    logEntry.error = 'Missing tenantId';
-                    break;
+                    // We throw error to ensure Stripe retries (and we don't mark as processed via 200)
+                    // But wait, if we threw above, we already set the idempotency key?
+                    // Ideally we should set idempotency AFTER success, or use a "processing" state.
+                    // However, standard pattern: if we fail here, we should probably DELETE the key or let it remain processed?
+                    // Actually, if we fail, Stripe retries. If we set key, next retry is skipped.
+                    // FIX: Delete idempotency key if crucial processing fails.
+                    await kv.del(idempotencyKey);
+                    return NextResponse.json({ error: 'Missing tenantId' }, { status: 400 });
                 }
 
-                // Fetch subscription details
                 const subscription = await stripe.subscriptions.retrieve(subscriptionId) as any;
                 const quantity = subscription.items?.data[0]?.quantity || 1;
                 const activeUntil = new Date(subscription.current_period_end * 1000);
 
-                // Activate subscription (converts trial to paid)
                 await activateSubscription(tenantId, customerId, subscriptionId, activeUntil, quantity);
 
-                // Log the change
+                // Audit log
                 const changeLog: AccessChangeLog = {
                     timestamp: new Date(),
                     tenantId,
                     action: 'ACTIVATE',
-                    oldStatus: 'TRIALING',
+                    oldStatus: 'TRIALING', // Assumption: coming from trial or new
                     newStatus: 'ACTIVE',
                     source: 'STRIPE',
                     metadata: { subscriptionId, quantity },
                 };
                 accessChangeLogs.push(changeLog);
 
-                logEntry.processed = true;
                 console.log(`✅ Subscription activated for tenant ${tenantId}`);
                 break;
             }
 
-            // Subscription updated - sync status
+            case 'customer.subscription.created':
             case 'customer.subscription.updated': {
                 const subscription = event.data.object as any;
                 const customerId = subscription.customer as string;
 
-                logEntry.stripeCustomerId = customerId;
-
                 const existing = await getTenantAccessByCustomer(customerId);
                 if (!existing) {
-                    console.warn(`⚠️ Update for unknown customer: ${customerId}`);
-                    logEntry.error = 'Customer not found';
+                    // Usually harmless for 'created' if checkout hasn't finished, OR if we don't have mapping yet.
+                    // For 'created', checkout.session.completed normally handles creation.
+                    // We log warning but don't fail, to avoid retry loops on unmapped customers.
+                    console.warn(`⚠️ Subscription update for unknown customer: ${customerId}`);
                     break;
                 }
 
-                logEntry.tenantId = existing.tenantId;
-
                 const quantity = subscription.items?.data[0]?.quantity || existing.seatLimit;
                 const activeUntil = new Date(subscription.current_period_end * 1000);
-
-                // Map Stripe status to our status
-                let newStatus = existing.status;
-                if (subscription.status === 'active') newStatus = 'ACTIVE';
-                else if (subscription.status === 'past_due') newStatus = 'PAST_DUE';
-                else if (subscription.status === 'canceled') newStatus = 'CANCELED';
-                else if (subscription.status === 'incomplete') newStatus = 'INACTIVE';
+                const newStatus = mapStripeStatus(subscription.status);
 
                 await updateSubscriptionStatus(existing.tenantId, newStatus, activeUntil, quantity);
-
-                logEntry.processed = true;
-                console.log(`✅ Subscription updated for tenant ${existing.tenantId}: ${newStatus}`);
+                console.log(`✅ Subscription synced for tenant ${existing.tenantId}: ${newStatus}`);
                 break;
             }
 
-            // Subscription deleted
             case 'customer.subscription.deleted': {
                 const subscription = event.data.object as any;
                 const customerId = subscription.customer as string;
 
-                logEntry.stripeCustomerId = customerId;
-
                 const existing = await getTenantAccessByCustomer(customerId);
                 if (existing) {
                     await updateSubscriptionStatus(existing.tenantId, 'CANCELED');
-                    logEntry.tenantId = existing.tenantId;
-                    logEntry.processed = true;
                     console.log(`❌ Subscription canceled for tenant ${existing.tenantId}`);
                 }
                 break;
             }
 
-            // Invoice paid - renew
             case 'invoice.paid': {
                 const invoice = event.data.object as any;
                 const customerId = invoice.customer as string;
                 const subscriptionId = invoice.subscription as string;
-
-                logEntry.stripeCustomerId = customerId;
 
                 if (subscriptionId) {
                     const existing = await getTenantAccessByCustomer(customerId);
@@ -174,26 +153,18 @@ export async function POST(request: NextRequest) {
                         const subscription = await stripe.subscriptions.retrieve(subscriptionId) as any;
                         const activeUntil = new Date(subscription.current_period_end * 1000);
                         await updateSubscriptionStatus(existing.tenantId, 'ACTIVE', activeUntil);
-                        logEntry.tenantId = existing.tenantId;
-                        logEntry.processed = true;
                         console.log(`✅ Invoice paid, renewed tenant ${existing.tenantId}`);
                     }
                 }
                 break;
             }
 
-            // Payment failed
             case 'invoice.payment_failed': {
                 const invoice = event.data.object as any;
                 const customerId = invoice.customer as string;
-
-                logEntry.stripeCustomerId = customerId;
-
                 const existing = await getTenantAccessByCustomer(customerId);
                 if (existing) {
                     await updateSubscriptionStatus(existing.tenantId, 'PAST_DUE');
-                    logEntry.tenantId = existing.tenantId;
-                    logEntry.processed = true;
                     console.log(`⚠️ Payment failed for tenant ${existing.tenantId}`);
                 }
                 break;
@@ -203,17 +174,14 @@ export async function POST(request: NextRequest) {
                 console.log(`ℹ️ Unhandled event type: ${event.type}`);
         }
 
-        processedEvents.add(event.id);
-        stripeEventLogs.push(logEntry);
-
         return NextResponse.json({ received: true });
     } catch (error) {
         console.error('❌ Webhook handler error:', error);
-        logEntry.error = error instanceof Error ? error.message : 'Unknown error';
-        stripeEventLogs.push(logEntry);
+
+        // Critical: If processing failed, we want Stripe to retry.
+        // We MUST delete the idempotency key so the retry isn't skipped.
+        await kv.del(idempotencyKey);
 
         return NextResponse.json({ error: 'Webhook handler failed' }, { status: 500 });
     }
 }
-
-export { stripeEventLogs };

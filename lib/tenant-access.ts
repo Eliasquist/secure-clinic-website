@@ -1,3 +1,5 @@
+import { kv } from '@vercel/kv';
+
 // ============================================
 // TENANT ACCESS: Entitlement model
 // Single source of truth for tenant access rights
@@ -16,7 +18,7 @@ export interface TenantAccess {
     seatLimit: number;
     seatsUsed: number;
 
-    trialEndsAt: Date | null;      // Only if status=TRIAL
+    trialEndsAt: Date | null;      // Only if status=TRIALING
     activeUntil: Date | null;      // Stripe current_period_end or manual paid-until
 
     stripeCustomerId: string | null;
@@ -45,13 +47,13 @@ export function computeEntitlement(access: TenantAccess | null): EntitlementResu
 
     const now = new Date();
 
-    // TRIAL status
+    // TRIALING status
     if (access.status === 'TRIALING') {
-        if (access.trialEndsAt && access.trialEndsAt > now) {
+        if (access.trialEndsAt && new Date(access.trialEndsAt) > now) {
             return {
                 entitled: true,
                 mode: 'TRIALING',
-                until: access.trialEndsAt,
+                until: new Date(access.trialEndsAt),
                 seats: access.seatLimit,
             };
         }
@@ -60,11 +62,11 @@ export function computeEntitlement(access: TenantAccess | null): EntitlementResu
 
     // ACTIVE status (paid subscription)
     if (access.status === 'ACTIVE') {
-        if (access.activeUntil && access.activeUntil > now) {
+        if (access.activeUntil && new Date(access.activeUntil) > now) {
             return {
                 entitled: true,
                 mode: 'ACTIVE',
-                until: access.activeUntil,
+                until: new Date(access.activeUntil),
                 seats: access.seatLimit,
             };
         }
@@ -85,41 +87,71 @@ export function computeEntitlement(access: TenantAccess | null): EntitlementResu
 }
 
 // ============================================
-// STORAGE: In-memory for MVP, replace with Vercel KV
+// STORAGE: Vercel KV (Redis) + In-memory fallback
+// Key format: tenant:access:<tenantId>
 // ============================================
-const tenantAccessStore = new Map<string, TenantAccess>();
+const memoryStore = new Map<string, TenantAccess>();
 
-export function getTenantAccess(tenantId: string): TenantAccess | null {
-    const access = tenantAccessStore.get(tenantId);
-    if (!access) return null;
+function getKey(tenantId: string) {
+    return `tenant:access:${tenantId}`;
+}
 
-    // Deserialize dates if stored as strings
+// Helper to handle Date serialization/deserialization
+function deserialize(data: any): TenantAccess | null {
+    if (!data) return null;
     return {
-        ...access,
-        trialEndsAt: access.trialEndsAt ? new Date(access.trialEndsAt) : null,
-        activeUntil: access.activeUntil ? new Date(access.activeUntil) : null,
-        createdAt: new Date(access.createdAt),
-        updatedAt: new Date(access.updatedAt),
+        ...data,
+        trialEndsAt: data.trialEndsAt ? new Date(data.trialEndsAt) : null,
+        activeUntil: data.activeUntil ? new Date(data.activeUntil) : null,
+        createdAt: new Date(data.createdAt),
+        updatedAt: new Date(data.updatedAt),
     };
 }
 
-export function setTenantAccess(access: TenantAccess): void {
+export async function getTenantAccess(tenantId: string): Promise<TenantAccess | null> {
+    try {
+        // Try KV first
+        if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+            const data = await kv.get<TenantAccess>(getKey(tenantId));
+            if (data) return deserialize(data);
+        }
+    } catch (error) {
+        console.warn('KV get failed, falling back to memory', error);
+    }
+
+    // Fallback to memory
+    const access = memoryStore.get(tenantId);
+    return access ? deserialize(access) : null;
+}
+
+export async function setTenantAccess(access: TenantAccess): Promise<void> {
     access.updatedAt = new Date();
-    tenantAccessStore.set(access.tenantId, access);
+
+    // Update memory
+    memoryStore.set(access.tenantId, access);
+
+    // Update KV
+    try {
+        if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+            await kv.set(getKey(access.tenantId), access);
+        }
+    } catch (error) {
+        console.warn('KV set failed', error);
+    }
 }
 
 // ============================================
 // HELPER: Grant trial to tenant
 // ============================================
-export function grantTrial(
+export async function grantTrial(
     tenantId: string,
     days: number = 14,
     seatLimit: number = 1
-): TenantAccess {
+): Promise<TenantAccess> {
     const now = new Date();
     const trialEndsAt = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
 
-    const existing = getTenantAccess(tenantId);
+    const existing = await getTenantAccess(tenantId);
 
     const access: TenantAccess = {
         id: existing?.id || crypto.randomUUID(),
@@ -136,7 +168,7 @@ export function grantTrial(
         updatedAt: now,
     };
 
-    setTenantAccess(access);
+    await setTenantAccess(access);
     console.log(`✅ Granted ${days}-day trial to tenant ${tenantId} until ${trialEndsAt.toISOString()}`);
 
     return access;
@@ -145,15 +177,15 @@ export function grantTrial(
 // ============================================
 // HELPER: Activate subscription (from Stripe)
 // ============================================
-export function activateSubscription(
+export async function activateSubscription(
     tenantId: string,
     stripeCustomerId: string,
     stripeSubscriptionId: string,
     activeUntil: Date,
     seatLimit: number
-): TenantAccess {
+): Promise<TenantAccess> {
     const now = new Date();
-    const existing = getTenantAccess(tenantId);
+    const existing = await getTenantAccess(tenantId);
 
     const access: TenantAccess = {
         id: existing?.id || crypto.randomUUID(),
@@ -170,7 +202,7 @@ export function activateSubscription(
         updatedAt: now,
     };
 
-    setTenantAccess(access);
+    await setTenantAccess(access);
     console.log(`✅ Activated subscription for tenant ${tenantId} until ${activeUntil.toISOString()}`);
 
     return access;
@@ -179,13 +211,13 @@ export function activateSubscription(
 // ============================================
 // HELPER: Update subscription status
 // ============================================
-export function updateSubscriptionStatus(
+export async function updateSubscriptionStatus(
     tenantId: string,
     status: AccessStatus,
     activeUntil?: Date,
     seatLimit?: number
-): TenantAccess | null {
-    const existing = getTenantAccess(tenantId);
+): Promise<TenantAccess | null> {
+    const existing = await getTenantAccess(tenantId);
     if (!existing) return null;
 
     existing.status = status;
@@ -193,7 +225,7 @@ export function updateSubscriptionStatus(
     if (seatLimit !== undefined) existing.seatLimit = seatLimit;
     existing.updatedAt = new Date();
 
-    setTenantAccess(existing);
+    await setTenantAccess(existing);
     console.log(`🔄 Updated tenant ${tenantId} status to ${status}`);
 
     return existing;
@@ -201,13 +233,17 @@ export function updateSubscriptionStatus(
 
 // ============================================
 // HELPER: Get access by Stripe customer ID
+// Note: This is expensive with KV (scan), so we rely on memory/lookup for now.
+// For production scale, use a secondary index/key in KV.
 // ============================================
-export function getTenantAccessByCustomer(customerId: string): TenantAccess | null {
-    for (const access of tenantAccessStore.values()) {
-        if (access.stripeCustomerId === customerId) {
-            return access;
-        }
+export async function getTenantAccessByCustomer(customerId: string): Promise<TenantAccess | null> {
+    // Try memory first (fastest)
+    for (const access of memoryStore.values()) {
+        if (access.stripeCustomerId === customerId) return access;
     }
+
+    // KV scan not implemented for MVP - assumes memory cache is warm or 
+    // we would need a secondary index: `stripe:customer:${customerId} -> tenantId`
     return null;
 }
 

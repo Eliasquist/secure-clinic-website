@@ -16,7 +16,7 @@ export async function GET() {
         }
 
         // Get tenant access and compute entitlement
-        const access = getTenantAccess(tenantId);
+        const access = await getTenantAccess(tenantId);
         const entitlement = computeEntitlement(access);
 
         if (!access) {

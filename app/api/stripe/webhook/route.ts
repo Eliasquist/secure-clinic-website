@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
                 const activeUntil = new Date(subscription.current_period_end * 1000);
 
                 // Activate subscription (converts trial to paid)
-                activateSubscription(tenantId, customerId, subscriptionId, activeUntil, quantity);
+                await activateSubscription(tenantId, customerId, subscriptionId, activeUntil, quantity);
 
                 // Log the change
                 const changeLog: AccessChangeLog = {
@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
 
                 logEntry.stripeCustomerId = customerId;
 
-                const existing = getTenantAccessByCustomer(customerId);
+                const existing = await getTenantAccessByCustomer(customerId);
                 if (!existing) {
                     console.warn(`⚠️ Update for unknown customer: ${customerId}`);
                     logEntry.error = 'Customer not found';
@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
                 else if (subscription.status === 'canceled') newStatus = 'CANCELED';
                 else if (subscription.status === 'incomplete') newStatus = 'INACTIVE';
 
-                updateSubscriptionStatus(existing.tenantId, newStatus, activeUntil, quantity);
+                await updateSubscriptionStatus(existing.tenantId, newStatus, activeUntil, quantity);
 
                 logEntry.processed = true;
                 console.log(`✅ Subscription updated for tenant ${existing.tenantId}: ${newStatus}`);
@@ -150,9 +150,9 @@ export async function POST(request: NextRequest) {
 
                 logEntry.stripeCustomerId = customerId;
 
-                const existing = getTenantAccessByCustomer(customerId);
+                const existing = await getTenantAccessByCustomer(customerId);
                 if (existing) {
-                    updateSubscriptionStatus(existing.tenantId, 'CANCELED');
+                    await updateSubscriptionStatus(existing.tenantId, 'CANCELED');
                     logEntry.tenantId = existing.tenantId;
                     logEntry.processed = true;
                     console.log(`❌ Subscription canceled for tenant ${existing.tenantId}`);
@@ -169,11 +169,11 @@ export async function POST(request: NextRequest) {
                 logEntry.stripeCustomerId = customerId;
 
                 if (subscriptionId) {
-                    const existing = getTenantAccessByCustomer(customerId);
+                    const existing = await getTenantAccessByCustomer(customerId);
                     if (existing) {
                         const subscription = await stripe.subscriptions.retrieve(subscriptionId) as any;
                         const activeUntil = new Date(subscription.current_period_end * 1000);
-                        updateSubscriptionStatus(existing.tenantId, 'ACTIVE', activeUntil);
+                        await updateSubscriptionStatus(existing.tenantId, 'ACTIVE', activeUntil);
                         logEntry.tenantId = existing.tenantId;
                         logEntry.processed = true;
                         console.log(`✅ Invoice paid, renewed tenant ${existing.tenantId}`);
@@ -189,9 +189,9 @@ export async function POST(request: NextRequest) {
 
                 logEntry.stripeCustomerId = customerId;
 
-                const existing = getTenantAccessByCustomer(customerId);
+                const existing = await getTenantAccessByCustomer(customerId);
                 if (existing) {
-                    updateSubscriptionStatus(existing.tenantId, 'PAST_DUE');
+                    await updateSubscriptionStatus(existing.tenantId, 'PAST_DUE');
                     logEntry.tenantId = existing.tenantId;
                     logEntry.processed = true;
                     console.log(`⚠️ Payment failed for tenant ${existing.tenantId}`);

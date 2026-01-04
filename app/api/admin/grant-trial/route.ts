@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Grant trial
-        const access = grantTrial(tenantId, days, seatLimit);
+        const access = await grantTrial(tenantId, days, seatLimit);
 
         // Log the action
         const logEntry: AccessChangeLog = {

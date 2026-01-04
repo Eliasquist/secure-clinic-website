@@ -148,7 +148,7 @@ export async function POST(
         logEntry.tenantId = tenantId;
 
         // STEP 4: Check entitlement using computeEntitlement()
-        const access = getTenantAccess(tenantId);
+        const access = await getTenantAccess(tenantId);
         const entitlement = computeEntitlement(access);
 
         if (!entitlement.entitled) {

@@ -1,19 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { stripe, PRICE_IDS } from '@/lib/stripe';
+import { stripe, PRICE_IDS, isStripeConfigured } from '@/lib/stripe';
 
 export async function POST(request: NextRequest) {
     try {
+        if (!isStripeConfigured()) {
+            return NextResponse.json(
+                { error: 'Betalingssystem er ikke konfigurert' },
+                { status: 503 }
+            );
+        }
+
         const session = await auth();
 
         if (!session?.user?.email) {
             return NextResponse.json(
-                { error: 'You must be logged in to subscribe' },
+                { error: 'Du må være innlogget for å abonnere' },
                 { status: 401 }
             );
         }
 
-        const { priceId, successUrl, cancelUrl } = await request.json();
+        const tenantId = session.tenantId;
+        if (!tenantId) {
+            return NextResponse.json(
+                { error: 'Mangler tenant-tilknytning. Kontakt support.' },
+                { status: 400 }
+            );
+        }
+
+        const { priceId, successUrl, cancelUrl, quantity = 1 } = await request.json();
 
         // Create or retrieve Stripe customer
         const customers = await stripe.customers.list({
@@ -29,31 +44,35 @@ export async function POST(request: NextRequest) {
                 email: session.user.email,
                 name: session.user.name || undefined,
                 metadata: {
-                    tenantId: session.tenantId || '',
+                    tenantId,
                 },
             });
             customerId = customer.id;
         }
 
         // Create checkout session
+        // IMPORTANT: client_reference_id is used for tenant mapping in webhooks
         const checkoutSession = await stripe.checkout.sessions.create({
             customer: customerId,
+            client_reference_id: tenantId, // Critical for tenant mapping
             mode: 'subscription',
             payment_method_types: ['card'],
             line_items: [
                 {
                     price: priceId || PRICE_IDS.BASIC_MONTHLY,
-                    quantity: 1,
+                    quantity: Math.max(1, quantity), // Per-seat, min 1
                 },
             ],
             success_url: successUrl || `${request.nextUrl.origin}/dashboard/subscription?success=true`,
             cancel_url: cancelUrl || `${request.nextUrl.origin}/dashboard/subscription?canceled=true`,
             subscription_data: {
                 metadata: {
-                    tenantId: session.tenantId || '',
+                    tenantId,
                     userEmail: session.user.email,
                 },
             },
+            // Allow customers to adjust quantity in checkout if seats > 1
+            allow_promotion_codes: true,
         });
 
         return NextResponse.json({ url: checkoutSession.url });

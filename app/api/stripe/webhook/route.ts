@@ -6,8 +6,10 @@ import {
     activateSubscription,
     updateSubscriptionStatus,
     accessChangeLogs,
+    logAccessChange,
     AccessChangeLog,
-    AccessStatus
+    AccessStatus,
+    isKvConfigured
 } from '@/lib/tenant-access';
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
@@ -19,10 +21,10 @@ function mapStripeStatus(status: string): AccessStatus {
         case 'trialing': return 'TRIALING';
         case 'past_due': return 'PAST_DUE';
         case 'unpaid': return 'PAST_DUE';
+        case 'paused': return 'PAST_DUE'; // Treat paused as past_due to block new downloads
         case 'canceled': return 'CANCELED';
         case 'incomplete': return 'INACTIVE';
         case 'incomplete_expired': return 'INACTIVE';
-        case 'paused': return 'INACTIVE';
         default: return 'INACTIVE';
     }
 }
@@ -49,24 +51,26 @@ export async function POST(request: NextRequest) {
     }
 
     // IDEMPOTENCY: Two-Phase Commit Pattern
-    // 1. Set "processing" (Short TTL) - NX ensures we only process once
     const idempotencyKey = `stripe:event:${event.id}`;
 
     // Fail-Closed check for KV in production
-    if (process.env.NODE_ENV === 'production' && !process.env.KV_REST_API_URL) {
+    if (process.env.NODE_ENV === 'production' && !isKvConfigured()) {
         console.error('CRITICAL: KV not configured in production. Cannot handle webhook idempotency.');
         return NextResponse.json({ error: 'System Configuration Error' }, { status: 503 });
     }
 
     try {
-        // NX: true (only set if not exists), EX: 600 (10 min processing timeout)
-        // If key exists (processing or done), we skip.
-        // If "processing" expires (crash), we can retry safely after 10m.
-        const isNew = await kv.set(idempotencyKey, 'processing', { nx: true, ex: 600 });
+        if (isKvConfigured()) {
+            // NX: true (only set if not exists), EX: 600 (10 min processing timeout)
+            // If key exists (processing or done), we skip.
+            // If "processing" expires (crash), we can retry safely after 10m.
+            const result = await kv.set(idempotencyKey, 'processing', { nx: true, ex: 600 });
+            const isNew = result === 'OK' || result === 1; // Vercel KV can return 'OK' or 1 depending on client
 
-        if (!isNew) {
-            console.log(`⏭️ Skipping already processed/processing event: ${event.id}`);
-            return NextResponse.json({ received: true, skipped: true });
+            if (!isNew) {
+                console.log(`⏭️ Skipping already processed/processing event: ${event.id}`);
+                return NextResponse.json({ received: true, skipped: true });
+            }
         }
     } catch (error) {
         // If KV fails in prod, we must 500 so Stripe retries later when KV might be up
@@ -106,7 +110,7 @@ export async function POST(request: NextRequest) {
                     source: 'STRIPE',
                     metadata: { subscriptionId, quantity },
                 };
-                accessChangeLogs.push(changeLog);
+                logAccessChange(changeLog);
 
                 console.log(`✅ Subscription activated for tenant ${tenantId}`);
                 break;
@@ -123,7 +127,18 @@ export async function POST(request: NextRequest) {
                     const activeUntil = new Date(subscription.current_period_end * 1000);
                     const newStatus = mapStripeStatus(subscription.status);
                     await updateSubscriptionStatus(existing.tenantId, newStatus, activeUntil, quantity);
-                    console.log(`✅ Subscription created/synced for tenant ${existing.tenantId}: ${newStatus}`);
+
+                    logAccessChange({
+                        timestamp: new Date(),
+                        tenantId: existing.tenantId,
+                        action: 'UPDATE_STATUS',
+                        oldStatus: existing.status,
+                        newStatus,
+                        source: 'STRIPE',
+                        metadata: { reason: 'subscription.created sync' }
+                    });
+
+                    console.log(`✅ Subscription synced for tenant ${existing.tenantId}: ${newStatus}`);
                 } else {
                     console.log(`ℹ️ Unmapped customer created: ${customerId} (waiting for checkout completion)`);
                 }
@@ -146,6 +161,17 @@ export async function POST(request: NextRequest) {
                 const newStatus = mapStripeStatus(subscription.status);
 
                 await updateSubscriptionStatus(existing.tenantId, newStatus, activeUntil, quantity);
+
+                logAccessChange({
+                    timestamp: new Date(),
+                    tenantId: existing.tenantId,
+                    action: 'UPDATE_STATUS',
+                    oldStatus: existing.status,
+                    newStatus,
+                    source: 'STRIPE',
+                    metadata: { reason: 'subscription.updated' }
+                });
+
                 console.log(`✅ Subscription updated for tenant ${existing.tenantId}: ${newStatus}`);
                 break;
             }
@@ -157,6 +183,17 @@ export async function POST(request: NextRequest) {
                 const existing = await getTenantAccessByCustomer(customerId);
                 if (existing) {
                     await updateSubscriptionStatus(existing.tenantId, 'CANCELED');
+
+                    logAccessChange({
+                        timestamp: new Date(),
+                        tenantId: existing.tenantId,
+                        action: 'CANCEL',
+                        oldStatus: existing.status,
+                        newStatus: 'CANCELED',
+                        source: 'STRIPE',
+                        metadata: { reason: 'subscription.deleted' }
+                    });
+
                     console.log(`❌ Subscription canceled for tenant ${existing.tenantId}`);
                 }
                 break;
@@ -171,8 +208,10 @@ export async function POST(request: NextRequest) {
                     const existing = await getTenantAccessByCustomer(customerId);
                     if (existing) {
                         const subscription = await stripe.subscriptions.retrieve(subscriptionId) as any;
+                        const quantity = subscription.items?.data[0]?.quantity || existing.seatLimit;
                         const activeUntil = new Date(subscription.current_period_end * 1000);
-                        await updateSubscriptionStatus(existing.tenantId, 'ACTIVE', activeUntil);
+
+                        await updateSubscriptionStatus(existing.tenantId, 'ACTIVE', activeUntil, quantity);
                         console.log(`✅ Invoice paid, renewed tenant ${existing.tenantId}`);
                     }
                 }
@@ -183,6 +222,7 @@ export async function POST(request: NextRequest) {
                 const invoice = event.data.object as any;
                 const customerId = invoice.customer as string;
                 const existing = await getTenantAccessByCustomer(customerId);
+
                 if (existing) {
                     await updateSubscriptionStatus(existing.tenantId, 'PAST_DUE');
                     console.log(`⚠️ Payment failed for tenant ${existing.tenantId}`);
@@ -197,11 +237,15 @@ export async function POST(request: NextRequest) {
         // 2. Mark as DONE (Long TTL)
         // If we reach here, processing succeeded. Update key to 'done' valid for 30 days.
         try {
-            await kv.set(idempotencyKey, 'done', { ex: 60 * 60 * 24 * 30 }); // 30 days
+            if (isKvConfigured()) {
+                await kv.set(idempotencyKey, 'done', { ex: 60 * 60 * 24 * 30 }); // 30 days
+            }
         } catch (kvError) {
-            console.error('⚠️ Failed to mark event as done in KV (but processing succeeded)', kvError);
-            // We don't fail the request here, as the action was performed.
-            // Worst case: double processing on retry, which updates are idempotent-ish.
+            console.error('⚠️ Failed to mark event as done in KV (processing succeeded). Extending expiry.', kvError);
+            // Fallback: Extend 'processing' timeout if we can't write 'done'
+            try {
+                if (isKvConfigured()) await kv.expire(idempotencyKey, 60 * 60 * 24 * 30);
+            } catch (e) { /* ignore secondary fail */ }
         }
 
         return NextResponse.json({ received: true });
@@ -211,7 +255,7 @@ export async function POST(request: NextRequest) {
 
         // Critical: Delete idempotency key so Stripe retry is allowed.
         try {
-            await kv.del(idempotencyKey);
+            if (isKvConfigured()) await kv.del(idempotencyKey);
             console.log('🗑️ Deleted idempotency key to allow retry');
         } catch (delError) {
             console.error('☠️ Failed to delete idempotency key during error handling', delError);

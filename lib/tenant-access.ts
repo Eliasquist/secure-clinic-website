@@ -109,7 +109,7 @@ function deserialize(data: any): TenantAccess | null {
 }
 
 // Helper to check KV availability
-function isKvConfigured() {
+export function isKvConfigured() {
     return !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
 }
 
@@ -139,15 +139,15 @@ export async function getTenantAccess(tenantId: string): Promise<TenantAccess | 
 }
 
 export async function setTenantAccess(access: TenantAccess): Promise<void> {
+    // STRICT PROD CHECK: Fail if KV is missing in production (Check BEFORE memory write)
+    if (process.env.NODE_ENV === 'production' && !isKvConfigured()) {
+        throw new Error('CRITICAL: Vercel KV is not configured in production. Cannot save tenant access safely.');
+    }
+
     access.updatedAt = new Date();
 
     // Update memory (always useful for dev/cache)
     memoryStore.set(access.tenantId, access);
-
-    // STRICT PROD CHECK: Fail if KV is missing in production
-    if (process.env.NODE_ENV === 'production' && !isKvConfigured()) {
-        throw new Error('CRITICAL: Vercel KV is not configured in production. Cannot save tenant access safely.');
-    }
 
     // Update KV
     try {

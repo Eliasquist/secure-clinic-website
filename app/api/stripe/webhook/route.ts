@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
                     timestamp: new Date(),
                     tenantId,
                     action: 'ACTIVATE',
-                    oldStatus: 'TRIAL',
+                    oldStatus: 'TRIALING',
                     newStatus: 'ACTIVE',
                     source: 'STRIPE',
                     metadata: { subscriptionId, quantity },

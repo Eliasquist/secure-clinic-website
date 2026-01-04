@@ -69,7 +69,7 @@ export default function SubscriptionPage() {
   };
 
   const daysRemaining = getDaysRemaining();
-  const isTrial = subscription?.mode === 'TRIAL';
+  const isTrial = subscription?.mode === 'TRIALING';
   const isActive = subscription?.entitled;
 
   return (

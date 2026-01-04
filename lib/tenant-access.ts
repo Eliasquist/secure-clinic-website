@@ -3,7 +3,7 @@
 // Single source of truth for tenant access rights
 // ============================================
 
-export type AccessStatus = 'TRIAL' | 'ACTIVE' | 'INACTIVE' | 'PAST_DUE' | 'CANCELED';
+export type AccessStatus = 'TRIALING' | 'ACTIVE' | 'INACTIVE' | 'PAST_DUE' | 'CANCELED';
 export type AccessSource = 'MANUAL' | 'STRIPE';
 
 export interface TenantAccess {
@@ -28,7 +28,7 @@ export interface TenantAccess {
 
 export interface EntitlementResult {
     entitled: boolean;
-    mode?: 'TRIAL' | 'ACTIVE';
+    mode?: 'TRIALING' | 'ACTIVE';
     reason?: string;
     until?: Date;
     seats?: number;
@@ -46,11 +46,11 @@ export function computeEntitlement(access: TenantAccess | null): EntitlementResu
     const now = new Date();
 
     // TRIAL status
-    if (access.status === 'TRIAL') {
+    if (access.status === 'TRIALING') {
         if (access.trialEndsAt && access.trialEndsAt > now) {
             return {
                 entitled: true,
-                mode: 'TRIAL',
+                mode: 'TRIALING',
                 until: access.trialEndsAt,
                 seats: access.seatLimit,
             };
@@ -124,7 +124,7 @@ export function grantTrial(
     const access: TenantAccess = {
         id: existing?.id || crypto.randomUUID(),
         tenantId,
-        status: 'TRIAL',
+        status: 'TRIALING',
         source: 'MANUAL',
         seatLimit,
         seatsUsed: existing?.seatsUsed || 0,

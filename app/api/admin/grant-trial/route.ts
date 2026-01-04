@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
             tenantId,
             action: 'GRANT_TRIAL',
             oldStatus: null,
-            newStatus: 'TRIAL',
+            newStatus: 'TRIALING',
             source: 'MANUAL',
             actorEmail: session.user.email,
             metadata: { days, seatLimit },

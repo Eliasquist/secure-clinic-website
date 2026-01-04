@@ -31,7 +31,7 @@ export async function GET() {
                 mode: entitlement.entitled ? entitlement.mode : null,
                 entitled: entitlement.entitled,
                 reason: entitlement.reason,
-                plan: access.status === 'TRIAL' ? 'Prøveperiode' : 'Professional',
+                plan: access.status === 'TRIALING' ? 'Prøveperiode' : 'Professional',
                 seats: access.seatLimit,
                 seatsUsed: access.seatsUsed,
                 // For trial: show trial end date

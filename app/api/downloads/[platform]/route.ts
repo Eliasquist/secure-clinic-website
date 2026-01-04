@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { stripe, isStripeConfigured } from '@/lib/stripe';
 import {
-    hasActiveSubscription,
+    getTenantAccess,
+    computeEntitlement,
     downloadLogs,
     DownloadLog,
-} from '@/lib/subscription-store';
+} from '@/lib/tenant-access';
 
 // ============================================
 // WHITELIST: Only allowed platforms/assets
@@ -15,7 +16,6 @@ type Platform = typeof ALLOWED_PLATFORMS[number];
 
 // ============================================
 // RELEASE CONFIGURATION
-// In production, this would come from database or releases API
 // ============================================
 interface ReleaseAsset {
     filename: string;
@@ -46,7 +46,7 @@ const RELEASES: Record<Platform, ReleaseAsset> = {
 };
 
 // ============================================
-// RATE LIMITING: Per-tenant, in-memory
+// RATE LIMITING
 // ============================================
 interface RateLimit {
     count: number;
@@ -54,7 +54,7 @@ interface RateLimit {
 }
 const rateLimits = new Map<string, RateLimit>();
 const RATE_LIMIT_MAX = 10;
-const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
 
 function checkRateLimit(tenantId: string): { allowed: boolean; remaining: number } {
     const now = new Date();
@@ -133,7 +133,7 @@ export async function POST(
         logEntry.userEmail = session.user.email;
         logEntry.userId = session.user.id || session.user.email;
 
-        // STEP 3: Get tenant and check entitlements
+        // STEP 3: Get tenant
         const tenantId = session.tenantId;
 
         if (!tenantId) {
@@ -147,36 +147,30 @@ export async function POST(
 
         logEntry.tenantId = tenantId;
 
-        // Check local entitlements first (fast, source of truth)
-        let isActive = hasActiveSubscription(tenantId);
+        // STEP 4: Check entitlement using computeEntitlement()
+        const access = getTenantAccess(tenantId);
+        const entitlement = computeEntitlement(access);
 
-        // Fallback to Stripe if local store is empty
-        if (!isActive && isStripeConfigured()) {
-            const customers = await stripe.customers.list({
-                email: session.user.email,
-                limit: 1,
-            });
-
-            if (customers.data.length > 0) {
-                const subscriptions = await stripe.subscriptions.list({
-                    customer: customers.data[0].id,
-                    status: 'active',
-                    limit: 1,
-                });
-                isActive = subscriptions.data.length > 0;
-            }
-        }
-
-        if (!isActive) {
-            logEntry.error = 'No active subscription';
+        if (!entitlement.entitled) {
+            logEntry.error = `Not entitled: ${entitlement.reason}`;
             downloadLogs.push(logEntry);
+
+            // User-friendly error messages
+            const errorMessages: Record<string, string> = {
+                'NO_ACCESS': 'Ingen tilgang. Kontakt support for å aktivere prøveperiode.',
+                'TRIAL_EXPIRED': 'Prøveperioden har utløpt. Kontakt oss for å aktivere abonnement.',
+                'PAST_DUE': 'Betalingen har feilet. Oppdater betalingsinformasjon i abonnementinnstillinger.',
+                'CANCELED': 'Abonnementet er kansellert. Kontakt oss for å reaktivere.',
+                'INACTIVE': 'Abonnementet er ikke aktivt.',
+            };
+
             return NextResponse.json(
-                { error: 'Du må ha et aktivt abonnement for å laste ned' },
+                { error: errorMessages[entitlement.reason || ''] || 'Ingen tilgang til nedlasting' },
                 { status: 403 }
             );
         }
 
-        // STEP 4: Rate limiting
+        // STEP 5: Rate limiting
         const { allowed, remaining } = checkRateLimit(tenantId);
 
         if (!allowed) {
@@ -188,13 +182,13 @@ export async function POST(
             );
         }
 
-        // STEP 5: Generate download URL
+        // STEP 6: Generate download URL
         const downloadUrl = release.sourceUrl;
 
         logEntry.success = true;
         downloadLogs.push(logEntry);
 
-        console.log(`📥 Download: ${platform} by ${session.user.email} (tenant: ${tenantId}) - ${Date.now() - startTime}ms`);
+        console.log(`📥 Download: ${platform} by ${session.user.email} (tenant: ${tenantId}, mode: ${entitlement.mode}) - ${Date.now() - startTime}ms`);
 
         return NextResponse.json({
             url: downloadUrl,
@@ -202,6 +196,8 @@ export async function POST(
             size: release.size,
             checksum: release.checksum,
             remaining,
+            mode: entitlement.mode,
+            validUntil: entitlement.until?.toISOString(),
         });
     } catch (error) {
         console.error('Download error:', error);

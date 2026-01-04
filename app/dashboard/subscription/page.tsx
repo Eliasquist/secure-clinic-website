@@ -4,140 +4,207 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 
 interface SubscriptionData {
-    status: string;
-    plan: string;
-    currentPeriodEnd: string;
-    seats: number;
+  status: string;
+  source: string;
+  mode: string | null;
+  entitled: boolean;
+  reason?: string;
+  plan: string;
+  seats: number;
+  seatsUsed: number;
+  currentPeriodEnd: string | null;
+  trialEndsAt: string | null;
+  activeUntil: string | null;
 }
 
 export default function SubscriptionPage() {
-    const searchParams = useSearchParams();
-    const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const searchParams = useSearchParams();
+  const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
 
-    const success = searchParams.get("success");
-    const canceled = searchParams.get("canceled");
+  const success = searchParams.get("success");
+  const canceled = searchParams.get("canceled");
 
-    useEffect(() => {
-        // Fetch subscription status
-        fetch("/api/subscription/status")
-            .then((res) => res.json())
-            .then((data) => {
-                if (data.subscription) {
-                    setSubscription(data.subscription);
-                }
-                setLoading(false);
-            })
-            .catch(() => setLoading(false));
-    }, []);
-
-    const handleSubscribe = async () => {
-        setCheckoutLoading(true);
-        try {
-            const res = await fetch("/api/stripe/checkout", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({}),
-            });
-            const data = await res.json();
-            if (data.url) {
-                window.location.href = data.url;
-            }
-        } catch (error) {
-            console.error("Checkout error:", error);
-            setCheckoutLoading(false);
+  useEffect(() => {
+    fetch("/api/subscription/status")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.subscription) {
+          setSubscription(data.subscription);
         }
-    };
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
 
-    return (
-        <div className="subscription-page">
-            <h1>Abonnement</h1>
+  const handleSubscribe = async () => {
+    setCheckoutLoading(true);
+    try {
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert(data.error || "Kunne ikke starte betaling");
+        setCheckoutLoading(false);
+      }
+    } catch (error) {
+      console.error("Checkout error:", error);
+      setCheckoutLoading(false);
+    }
+  };
 
-            {success && (
-                <div className="alert success">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                        <polyline points="22 4 12 14.01 9 11.01" />
-                    </svg>
-                    <span>Takk for din bestilling! Abonnementet ditt er nå aktivt.</span>
-                </div>
-            )}
+  // Calculate days remaining
+  const getDaysRemaining = () => {
+    if (!subscription?.currentPeriodEnd) return null;
+    const end = new Date(subscription.currentPeriodEnd);
+    const now = new Date();
+    const days = Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    return days;
+  };
 
-            {canceled && (
-                <div className="alert warning">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <circle cx="12" cy="12" r="10" />
-                        <line x1="15" y1="9" x2="9" y2="15" />
-                        <line x1="9" y1="9" x2="15" y2="15" />
-                    </svg>
-                    <span>Betalingen ble avbrutt. Du kan prøve igjen når som helst.</span>
-                </div>
-            )}
+  const daysRemaining = getDaysRemaining();
+  const isTrial = subscription?.mode === 'TRIAL';
+  const isActive = subscription?.entitled;
 
-            {loading ? (
-                <div className="loading">Laster...</div>
-            ) : subscription ? (
-                <div className="subscription-card active">
-                    <div className="status-badge active">
-                        <span className="dot"></span>
-                        Aktivt
-                    </div>
-                    <h2>Secure Clinic Professional</h2>
-                    <div className="details">
-                        <div className="detail-row">
-                            <span className="label">Status</span>
-                            <span className="value">{subscription.status}</span>
-                        </div>
-                        <div className="detail-row">
-                            <span className="label">Seter</span>
-                            <span className="value">{subscription.seats} bruker(e)</span>
-                        </div>
-                        <div className="detail-row">
-                            <span className="label">Neste fakturering</span>
-                            <span className="value">
-                                {new Date(subscription.currentPeriodEnd).toLocaleDateString("nb-NO")}
-                            </span>
-                        </div>
-                    </div>
-                    <div className="actions">
-                        <button className="btn btn-secondary">Administrer abonnement</button>
-                        <a href="/dashboard/downloads" className="btn btn-primary">
-                            Last ned appen
-                        </a>
-                    </div>
-                </div>
+  return (
+    <div className="subscription-page">
+      <h1>Abonnement</h1>
+
+      {success && (
+        <div className="alert success">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+            <polyline points="22 4 12 14.01 9 11.01" />
+          </svg>
+          <span>Takk for din bestilling! Abonnementet ditt er nå aktivt.</span>
+        </div>
+      )}
+
+      {canceled && (
+        <div className="alert warning">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="15" y1="9" x2="9" y2="15" />
+            <line x1="9" y1="9" x2="15" y2="15" />
+          </svg>
+          <span>Betalingen ble avbrutt. Du kan prøve igjen når som helst.</span>
+        </div>
+      )}
+
+      {loading ? (
+        <div className="loading">Laster...</div>
+      ) : subscription && isActive ? (
+        <div className={`subscription-card ${isTrial ? 'trial' : 'active'}`}>
+          <div className={`status-badge ${isTrial ? 'trial' : 'active'}`}>
+            <span className="dot"></span>
+            {isTrial ? 'Prøveperiode' : 'Aktivt'}
+          </div>
+
+          <h2>{isTrial ? 'Prøveperiode' : 'Secure Clinic Professional'}</h2>
+
+          {isTrial && daysRemaining !== null && (
+            <div className="trial-countdown">
+              <div className="countdown-number">{daysRemaining}</div>
+              <div className="countdown-label">dager igjen</div>
+            </div>
+          )}
+
+          <div className="details">
+            <div className="detail-row">
+              <span className="label">Status</span>
+              <span className="value">{isTrial ? 'Prøveperiode' : 'Aktivt abonnement'}</span>
+            </div>
+            <div className="detail-row">
+              <span className="label">Seter</span>
+              <span className="value">{subscription.seats} bruker(e)</span>
+            </div>
+            <div className="detail-row">
+              <span className="label">{isTrial ? 'Utløper' : 'Neste fakturering'}</span>
+              <span className="value">
+                {subscription.currentPeriodEnd
+                  ? new Date(subscription.currentPeriodEnd).toLocaleDateString("nb-NO")
+                  : '-'}
+              </span>
+            </div>
+          </div>
+
+          <div className="actions">
+            {isTrial ? (
+              <>
+                <a href="mailto:hei@secureclinic.no" className="btn btn-secondary">
+                  Kontakt oss
+                </a>
+                <a href="/dashboard/downloads" className="btn btn-primary">
+                  Last ned appen
+                </a>
+              </>
             ) : (
-                <div className="subscription-card inactive">
-                    <h2>Ingen aktivt abonnement</h2>
-                    <p>
-                        Aktiver et abonnement for å få tilgang til Secure Clinic Journal
-                        desktop-applikasjonen og alle premium-funksjoner.
-                    </p>
-                    <div className="pricing">
-                        <div className="price">
-                            <span className="amount">599</span>
-                            <span className="currency">NOK/mnd</span>
-                        </div>
-                        <ul className="features">
-                            <li>✓ Desktop-applikasjon for Windows og macOS</li>
-                            <li>✓ Inkluderer 1 brukersete</li>
-                            <li>✓ Automatiske oppdateringer</li>
-                            <li>✓ Prioritert support</li>
-                            <li>✓ GDPR-compliance inkludert</li>
-                        </ul>
-                    </div>
-                    <button
-                        onClick={handleSubscribe}
-                        disabled={checkoutLoading}
-                        className="btn btn-primary btn-large"
-                    >
-                        {checkoutLoading ? "Laster..." : "Start abonnement"}
-                    </button>
-                </div>
+              <>
+                <button className="btn btn-secondary">Administrer abonnement</button>
+                <a href="/dashboard/downloads" className="btn btn-primary">
+                  Last ned appen
+                </a>
+              </>
             )}
+          </div>
 
-            <style jsx>{`
+          {isTrial && (
+            <div className="trial-upgrade">
+              <p>Liker du Secure Clinic? Oppgrader til fullt abonnement for å beholde tilgangen.</p>
+              <a href="mailto:hei@secureclinic.no?subject=Oppgradering fra prøveperiode" className="btn btn-primary btn-full">
+                Kontakt oss for å aktivere
+              </a>
+            </div>
+          )}
+        </div>
+      ) : subscription && !isActive ? (
+        <div className="subscription-card expired">
+          <div className="status-badge expired">
+            <span className="dot"></span>
+            {subscription.reason === 'TRIAL_EXPIRED' ? 'Prøveperiode utløpt' : 'Inaktivt'}
+          </div>
+          <h2>Tilgangen din har utløpt</h2>
+          <p>
+            {subscription.reason === 'TRIAL_EXPIRED'
+              ? 'Prøveperioden din har utløpt. Kontakt oss for å aktivere et abonnement.'
+              : 'Du har ikke lenger tilgang til Secure Clinic. Kontakt oss for å gjenopprette tilgangen.'}
+          </p>
+          <a href="mailto:hei@secureclinic.no?subject=Reaktivering av tilgang" className="btn btn-primary btn-full">
+            Kontakt oss
+          </a>
+        </div>
+      ) : (
+        <div className="subscription-card inactive">
+          <h2>Ingen aktivt abonnement</h2>
+          <p>
+            Kontakt oss for å få tilgang til Secure Clinic Journal
+            desktop-applikasjonen og alle premium-funksjoner.
+          </p>
+          <div className="pricing">
+            <div className="price">
+              <span className="amount">Kontakt oss</span>
+            </div>
+            <ul className="features">
+              <li>✓ Desktop-applikasjon for Windows og macOS</li>
+              <li>✓ Inkluderer brukerseter</li>
+              <li>✓ Automatiske oppdateringer</li>
+              <li>✓ Prioritert support</li>
+              <li>✓ GDPR-compliance inkludert</li>
+            </ul>
+          </div>
+          <a href="mailto:hei@secureclinic.no?subject=Interesse for Secure Clinic" className="btn btn-primary btn-large">
+            Ta kontakt
+          </a>
+        </div>
+      )}
+
+      <style jsx>{`
         .subscription-page {
           color: white;
           max-width: 600px;
@@ -182,7 +249,15 @@ export default function SubscriptionPage() {
         }
 
         .subscription-card.active {
+          border-color: rgba(34, 197, 94, 0.3);
+        }
+
+        .subscription-card.trial {
           border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .subscription-card.expired {
+          border-color: rgba(239, 68, 68, 0.3);
         }
 
         .status-badge {
@@ -201,6 +276,16 @@ export default function SubscriptionPage() {
           color: #22c55e;
         }
 
+        .status-badge.trial {
+          background: rgba(59, 130, 246, 0.15);
+          color: #3b82f6;
+        }
+
+        .status-badge.expired {
+          background: rgba(239, 68, 68, 0.15);
+          color: #ef4444;
+        }
+
         .status-badge .dot {
           width: 8px;
           height: 8px;
@@ -212,6 +297,25 @@ export default function SubscriptionPage() {
           font-size: 1.5rem;
           font-weight: 600;
           margin-bottom: 1.5rem;
+        }
+
+        .trial-countdown {
+          text-align: center;
+          padding: 1.5rem;
+          background: rgba(59, 130, 246, 0.1);
+          border-radius: 12px;
+          margin-bottom: 1.5rem;
+        }
+
+        .countdown-number {
+          font-size: 3rem;
+          font-weight: 700;
+          color: #3b82f6;
+        }
+
+        .countdown-label {
+          color: #94a3b8;
+          font-size: 0.9rem;
         }
 
         .details {
@@ -250,6 +354,7 @@ export default function SubscriptionPage() {
           border: none;
           cursor: pointer;
           transition: all 0.2s;
+          text-align: center;
         }
 
         .btn-primary {
@@ -267,7 +372,7 @@ export default function SubscriptionPage() {
           border: 1px solid rgba(148, 163, 184, 0.2);
         }
 
-        .btn-large {
+        .btn-large, .btn-full {
           width: 100%;
           padding: 1rem;
           font-size: 1.1rem;
@@ -278,7 +383,20 @@ export default function SubscriptionPage() {
           cursor: not-allowed;
         }
 
-        .subscription-card.inactive p {
+        .trial-upgrade {
+          margin-top: 2rem;
+          padding-top: 1.5rem;
+          border-top: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .trial-upgrade p {
+          color: #94a3b8;
+          margin-bottom: 1rem;
+          text-align: center;
+        }
+
+        .subscription-card.inactive p,
+        .subscription-card.expired p {
           color: #94a3b8;
           margin-bottom: 1.5rem;
         }
@@ -296,16 +414,9 @@ export default function SubscriptionPage() {
         }
 
         .amount {
-          font-size: 3rem;
-          font-weight: 700;
-          background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-        }
-
-        .currency {
-          color: #94a3b8;
-          margin-left: 0.5rem;
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: #3b82f6;
         }
 
         .features {
@@ -319,6 +430,6 @@ export default function SubscriptionPage() {
           color: #cbd5e1;
         }
       `}</style>
-        </div>
-    );
+    </div>
+  );
 }

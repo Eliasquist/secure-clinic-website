@@ -33,6 +33,58 @@ function decodeJwtPayload(token?: string): Record<string, unknown> | null {
     }
 }
 
+/**
+ * Check if tenant exists in backend database (DB-gate)
+ * Returns true if tenant is onboarded, false otherwise
+ * Fail-closed: returns false on any error
+ */
+async function checkTenantExistsInBackend(tid: string): Promise<boolean> {
+    const backendUrl = process.env.BACKEND_URL;
+    const portalKey = process.env.PORTAL_BACKEND_KEY;
+
+    // If not configured, skip DB-gate (pilot-friendly)
+    if (!backendUrl || !portalKey) {
+        console.log(`ℹ️ DB-gate not configured (BACKEND_URL or PORTAL_BACKEND_KEY missing). Skipping tenant check.`);
+        return true;
+    }
+
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+
+        const response = await fetch(
+            `${backendUrl}/internal/tenants/exists?tid=${encodeURIComponent(tid)}`,
+            {
+                headers: {
+                    'x-portal-key': portalKey,
+                },
+                cache: 'no-store',
+                signal: controller.signal,
+            }
+        );
+
+        clearTimeout(timeoutId);
+
+        if (response.status === 200) {
+            console.log(`✅ Tenant validated in backend: ${tid.substring(0, 8)}...`);
+            return true;
+        }
+
+        if (response.status === 404) {
+            console.warn(`🛑 Tenant not onboarded in backend: ${tid.substring(0, 8)}...`);
+            return false;
+        }
+
+        // Unexpected status - fail closed
+        console.error(`⚠️ Unexpected response from backend tenant check: ${response.status}`);
+        return false;
+    } catch (error) {
+        // Fail closed on any error (network, timeout, etc.)
+        console.error(`❌ Failed to check tenant in backend (fail-closed):`, error);
+        return false;
+    }
+}
+
 // ============================================
 // NEXTAUTH CONFIGURATION
 // ============================================
@@ -61,19 +113,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         /**
          * signIn callback: Security gate for login attempts
          * 
-         * Policy:
+         * Policy (in order):
          * 1. Superadmins always pass (SUPERADMIN_EMAILS)
-         * 2. Block MSA (personal Microsoft accounts) in production (AUTH_DENY_MSA_IN_PROD)
-         * 3. If ALLOWED_ENTRA_TENANT_IDS is set, only those tenant IDs pass
-         * 4. If ALLOWED_EMAIL_DOMAINS is set, only those email domains pass
+         * 2. Block MSA (personal Microsoft accounts) in production
+         * 3. DB-gate: Check if tenant exists in backend database
+         * 4. Fallback allowlists (if DB-gate not configured)
          * 
-         * Default (no env vars set): Pilot-friendly, allows all Entra logins
+         * Fail-closed: If backend is down or returns error, login is blocked.
          */
         async signIn({ user, account, profile }) {
             const email = (user?.email || (profile as Record<string, unknown>)?.email || "").toString().toLowerCase();
-            const emailDomain = email.includes("@") ? email.split("@")[1] : "";
 
-            // 1. Superadmin bypass
+            // 1. Superadmin bypass (always passes, even if tenant not onboarded)
             const superadmins = parseCsvEnv("SUPERADMIN_EMAILS");
             if (email && superadmins.includes(email)) {
                 console.log(`✅ Superadmin login allowed: ${email}`);
@@ -93,14 +144,29 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 return false;
             }
 
-            // 3. Tenant ID allowlist (if configured)
+            // 3. DB-gate: Check if tenant exists in backend
+            // This is the primary check - if configured, it overrides allowlists
+            const backendConfigured = !!(process.env.BACKEND_URL && process.env.PORTAL_BACKEND_KEY);
+
+            if (backendConfigured && tid) {
+                const tenantExists = await checkTenantExistsInBackend(tid);
+                if (!tenantExists) {
+                    console.warn(`🛑 Blocked login: tenant not onboarded in backend: ${email} (tid: ${tid})`);
+                    return false;
+                }
+                // Tenant exists in backend - allow login
+                console.log(`✅ Login allowed (DB-gate passed): ${email} (tid: ${tid})`);
+                return true;
+            }
+
+            // 4. Fallback: ENV allowlists (if DB-gate not configured)
             const allowedTids = parseCsvEnv("ALLOWED_ENTRA_TENANT_IDS");
             if (allowedTids.length > 0 && tid && !allowedTids.includes(tid)) {
                 console.warn(`🛑 Blocked login: tenantId not allowlisted: ${email} (tid: ${tid})`);
                 return false;
             }
 
-            // 4. Email domain allowlist (if configured)
+            const emailDomain = email.includes("@") ? email.split("@")[1] : "";
             const allowedDomains = parseCsvEnv("ALLOWED_EMAIL_DOMAINS");
             if (allowedDomains.length > 0 && emailDomain && !allowedDomains.includes(emailDomain)) {
                 console.warn(`🛑 Blocked login: email domain not allowlisted: ${email} (domain: ${emailDomain})`);
@@ -131,6 +197,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     pages: {
         signIn: "/login",
+        error: "/login", // Redirect to login page on error (with error query param)
     },
     trustHost: true,
 });

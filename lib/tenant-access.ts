@@ -285,6 +285,20 @@ export interface AccessChangeLog {
 
 export const accessChangeLogs: AccessChangeLog[] = [];
 
+// Persistent audit logging to KV (fire-and-forget with memory fallback)
+export function logAccessChange(log: AccessChangeLog): void {
+    // Always push to memory for quick access
+    accessChangeLogs.push(log);
+
+    // Persist to KV if configured (fire-and-forget)
+    if (isKvConfigured()) {
+        const key = `audit:access:${log.tenantId}`;
+        kv.lpush(key, JSON.stringify(log)).catch((error) => {
+            console.warn('Failed to persist access change log to KV:', error);
+        });
+    }
+}
+
 // ============================================
 // DOWNLOAD AUDIT LOG
 // ============================================

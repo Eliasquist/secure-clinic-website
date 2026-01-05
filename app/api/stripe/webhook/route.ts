@@ -65,7 +65,8 @@ export async function POST(request: NextRequest) {
             // If key exists (processing or done), we skip.
             // If "processing" expires (crash), we can retry safely after 10m.
             const result = await kv.set(idempotencyKey, 'processing', { nx: true, ex: 600 });
-            const isNew = result === 'OK' || result === 1; // Vercel KV can return 'OK' or 1 depending on client
+            // kv.set with NX returns 'OK' on success, null if key already exists
+            const isNew = result === 'OK';
 
             if (!isNew) {
                 console.log(`⏭️ Skipping already processed/processing event: ${event.id}`);

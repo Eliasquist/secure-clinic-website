@@ -13,8 +13,13 @@ export async function middleware(req: NextRequest) {
 
     // Auth protection for dashboard routes
     if (pathname.startsWith("/dashboard")) {
-        // Check for session cookie (next-auth.session-token or __Secure-next-auth.session-token)
-        const sessionToken = req.cookies.get("next-auth.session-token")?.value
+        // Check for session cookie
+        // NextAuth v5 uses "authjs.session-token" (or "__Secure-authjs.session-token" on HTTPS)
+        // NextAuth v4 used "next-auth.session-token"
+        const sessionToken = req.cookies.get("authjs.session-token")?.value
+            || req.cookies.get("__Secure-authjs.session-token")?.value
+            // Fallback to v4 names for compatibility during migration
+            || req.cookies.get("next-auth.session-token")?.value
             || req.cookies.get("__Secure-next-auth.session-token")?.value;
 
         if (!sessionToken) {

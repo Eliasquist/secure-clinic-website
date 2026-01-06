@@ -213,22 +213,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             const backendConfigured = !!(process.env.BACKEND_URL && process.env.PORTAL_BACKEND_KEY);
 
             // PRODUCTION: DB-gate is REQUIRED
-            // DEBUG: Temporarily bypassing for troubleshooting
+            // PRODUCTION: DB-gate is REQUIRED
             if (isProd && !backendConfigured) {
-                console.warn("⚠️ DB-gate not configured in production, but allowing for DEBUGGING.");
-                // logAuthDecision({ ...baseLog, decision: "DENY", reason: "DB_GATE_NOT_CONFIGURED" });
-                // console.error("❌ CRITICAL: DB-gate not configured in production. Login blocked.");
-                // return false;
+                logAuthDecision({ ...baseLog, decision: "DENY", reason: "DB_GATE_NOT_CONFIGURED" });
+                console.error("❌ CRITICAL: DB-gate not configured in production. Login blocked.");
+                return false;
             }
 
             // 4. DB-gate: Check if tenant exists in backend
             if (backendConfigured && tid) {
-                // DEBUG: BYPASS DB CALL
-                console.log("⚠️ DEBUG: Bypassing DB-gate backend call. Allowing login.");
-                logAuthDecision({ ...baseLog, decision: "ALLOW", reason: "DEBUG_BYPASS" });
-                return true;
-
-                /* 
                 const result = await checkTenantExistsInBackend(tid);
 
                 if (result.allowed) {
@@ -256,7 +249,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     httpStatus: result.httpStatus,
                 });
                 return false;
-                */
             }
 
             // 5. NON-PRODUCTION FALLBACK: ENV allowlists (only if DB-gate not configured)

@@ -106,7 +106,7 @@ async function checkTenantExistsInBackend(tid: string): Promise<DbGateResult> {
 
     try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
 
         const response = await fetch(
             `${backendUrl}/internal/tenants/exists?tid=${encodeURIComponent(tid)}`,

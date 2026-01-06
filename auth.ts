@@ -145,25 +145,13 @@ async function checkTenantExistsInBackend(tid: string): Promise<DbGateResult> {
 // NEXTAUTH CONFIGURATION
 // ============================================
 
-// DIAGNOSTICS
-console.log("[AUTH_DEBUG] Initializing NextAuth...");
-console.log("[AUTH_DEBUG] Env Check:", {
-    hasClientId: !!process.env.AZURE_AD_CLIENT_ID,
-    clientIdPrefix: process.env.AZURE_AD_CLIENT_ID?.substring(0, 3) || "N/A",
-    hasClientSecret: !!process.env.AZURE_AD_CLIENT_SECRET,
-    hasTenantId: !!process.env.AZURE_AD_TENANT_ID,
-    nodeEnv: process.env.NODE_ENV,
-});
-
 export const { handlers, signIn, signOut, auth } = NextAuth({
     providers: [
         MicrosoftEntraID({
             clientId: process.env.AZURE_AD_CLIENT_ID,
             clientSecret: process.env.AZURE_AD_CLIENT_SECRET,
-            // TEMP DEBUG: Commenting out issuer to force default (common) endpoint
-            // ...(process.env.AZURE_AD_TENANT_ID && process.env.AZURE_AD_TENANT_ID !== "common"
-            //    ? { issuer: `https://login.microsoftonline.com/${process.env.AZURE_AD_TENANT_ID}/v2.0` }
-            //    : {}),
+            // Force B2B Multi-tenant (Work & School accounts only)
+            issuer: "https://login.microsoftonline.com/organizations/v2.0",
             authorization: {
                 params: {
                     scope: "openid profile email User.Read",
@@ -171,7 +159,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             },
         }),
     ],
-    debug: true, // Enable debug logs for Vercel
+    debug: true, // Keep enabled until fully verified
+
 
     session: {
         strategy: "jwt",
@@ -248,7 +237,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
                 /* ORIGINAL CODE - uncomment after testing:
                 const result = await checkTenantExistsInBackend(tid);
-
+    
                 if (result.allowed) {
                     logAuthDecision({
                         ...baseLog,
@@ -259,13 +248,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     });
                     return true;
                 }
-
+    
                 // Denied by DB-gate
                 const reason = result.httpStatus === 404 ? "TENANT_NOT_ONBOARDED" :
                     result.httpStatus === 408 ? "DB_GATE_TIMEOUT" :
                         result.httpStatus === 0 ? "DB_GATE_ERROR" :
                             `DB_GATE_HTTP_${result.httpStatus}`;
-
+    
                 logAuthDecision({
                     ...baseLog,
                     decision: "DENY",

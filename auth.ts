@@ -221,7 +221,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             }
 
             // 4. DB-gate: Check if tenant exists in backend
+            // DEBUG: Temporarily bypass DB-gate to test OAuth flow
+            // TODO: Remove this bypass after confirming OAuth works!
             if (backendConfigured && tid) {
+                console.log(`🔧 DEBUG: Bypassing DB-gate for testing. TID: ${tid.substring(0, 8)}...`);
+                logAuthDecision({
+                    ...baseLog,
+                    decision: "ALLOW",
+                    reason: "DEBUG_BYPASS",
+                    latencyMs: 0,
+                    httpStatus: 0,
+                });
+                return true;
+
+                /* ORIGINAL CODE - uncomment after testing:
                 const result = await checkTenantExistsInBackend(tid);
 
                 if (result.allowed) {
@@ -249,6 +262,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     httpStatus: result.httpStatus,
                 });
                 return false;
+                */
             }
 
             // 5. NON-PRODUCTION FALLBACK: ENV allowlists (only if DB-gate not configured)

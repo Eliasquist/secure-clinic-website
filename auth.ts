@@ -148,8 +148,8 @@ async function checkTenantExistsInBackend(tid: string): Promise<DbGateResult> {
 export const { handlers, signIn, signOut, auth } = NextAuth({
     providers: [
         MicrosoftEntraID({
-            clientId: process.env.AZURE_AD_CLIENT_ID!,
-            clientSecret: process.env.AZURE_AD_CLIENT_SECRET!,
+            clientId: process.env.AZURE_AD_CLIENT_ID,
+            clientSecret: process.env.AZURE_AD_CLIENT_SECRET,
             // Use issuer for tenant-specific login, omit for multi-tenant ("common")
             ...(process.env.AZURE_AD_TENANT_ID && process.env.AZURE_AD_TENANT_ID !== "common"
                 ? { issuer: `https://login.microsoftonline.com/${process.env.AZURE_AD_TENANT_ID}/v2.0` }
@@ -161,6 +161,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             },
         }),
     ],
+    debug: true, // Enable debug logs for Vercel
+
     session: {
         strategy: "jwt",
         maxAge: 24 * 60 * 60, // 24 hours

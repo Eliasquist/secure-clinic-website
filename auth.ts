@@ -150,10 +150,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         MicrosoftEntraID({
             clientId: process.env.AZURE_AD_CLIENT_ID,
             clientSecret: process.env.AZURE_AD_CLIENT_SECRET,
-            // Use issuer for tenant-specific login, omit for multi-tenant ("common")
-            ...(process.env.AZURE_AD_TENANT_ID && process.env.AZURE_AD_TENANT_ID !== "common"
-                ? { issuer: `https://login.microsoftonline.com/${process.env.AZURE_AD_TENANT_ID}/v2.0` }
-                : {}),
+            // TEMP DEBUG: Commenting out issuer to force default (common) endpoint
+            // ...(process.env.AZURE_AD_TENANT_ID && process.env.AZURE_AD_TENANT_ID !== "common"
+            //    ? { issuer: `https://login.microsoftonline.com/${process.env.AZURE_AD_TENANT_ID}/v2.0` }
+            //    : {}),
             authorization: {
                 params: {
                     scope: "openid profile email User.Read",

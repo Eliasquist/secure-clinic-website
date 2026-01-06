@@ -145,6 +145,16 @@ async function checkTenantExistsInBackend(tid: string): Promise<DbGateResult> {
 // NEXTAUTH CONFIGURATION
 // ============================================
 
+// DIAGNOSTICS
+console.log("[AUTH_DEBUG] Initializing NextAuth...");
+console.log("[AUTH_DEBUG] Env Check:", {
+    hasClientId: !!process.env.AZURE_AD_CLIENT_ID,
+    clientIdPrefix: process.env.AZURE_AD_CLIENT_ID?.substring(0, 3) || "N/A",
+    hasClientSecret: !!process.env.AZURE_AD_CLIENT_SECRET,
+    hasTenantId: !!process.env.AZURE_AD_TENANT_ID,
+    nodeEnv: process.env.NODE_ENV,
+});
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
     providers: [
         MicrosoftEntraID({

@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { SessionProvider } from "next-auth/react";
-import DashboardNavbar from "./DashboardNavbar";
+import AppShell from "./components/AppShell";
 
 export default async function DashboardLayout({
     children,
@@ -14,14 +14,18 @@ export default async function DashboardLayout({
         redirect("/login");
     }
 
+    // Extract subscription data from session if available
+    // @ts-ignore - session may have extended properties
+    const subscription = session.subscription || {
+        status: 'INACTIVE',
+        entitled: false
+    };
+
     return (
         <SessionProvider session={session}>
-            <div style={{ minHeight: "100vh", background: "#f9fafb" }}>
-                <DashboardNavbar user={session.user} />
-                <main style={{ padding: "2rem", maxWidth: "1400px", margin: "0 auto" }}>
-                    {children}
-                </main>
-            </div>
+            <AppShell user={session.user} subscription={subscription}>
+                {children}
+            </AppShell>
         </SessionProvider>
     );
 }

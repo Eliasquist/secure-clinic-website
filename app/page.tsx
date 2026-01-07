@@ -397,6 +397,11 @@ export default function Home() {
                   </div>
                 </div>
               </div>
+
+              {/* Document Preview Grid */}
+              <div className="mt-12">
+                <CompliancePreviewGrid />
+              </div>
             </div>
           </div>
         </div>

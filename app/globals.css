@@ -461,6 +461,19 @@ body {
   gap: 12px;
 }
 
+/* Sticky + Compact mode */
+.navbar-sticky {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.navbar-compact {
+  padding: 8px 0;
+}
+
+.navbar-compact .navbar-logo span {
+  font-size: 18px;
+}
+
 /* ===== HERO SECTION ===== */
 .hero {
   min-height: 100vh;

@@ -263,6 +263,9 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Trust Bar */}
+      <TrustBadgeRow />
+
       {/* Features Section */}
       <section id="funksjoner" className="features section">
         <div className="container">

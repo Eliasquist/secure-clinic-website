@@ -19,6 +19,7 @@ import {
   CheckIcon,
 } from "./icons";
 import TrustBadgeRow from "./components/TrustBadgeRow";
+import ProductTourSection from "./components/ProductTourSection";
 import ChatBot from "./ChatBot";
 
 const heroImages = [
@@ -177,14 +178,13 @@ export default function Home() {
           <ul className="navbar-links">
             <li><a href="#funksjoner">Funksjoner</a></li>
             <li><a href="#sikkerhet">Sikkerhet</a></li>
-            <li><a href="/demo">Se demo</a></li>
-            <li><a href="/book/demo-klinikk">Prøv booking</a></li>
+            <li><a href="/demo">Demo</a></li>
             <li><a href="/startpakke">Startpakke</a></li>
             <li><a href="#kontakt">Kontakt</a></li>
           </ul>
           <div className="navbar-cta">
             <a href="/login" className="btn btn-ghost">Logg inn</a>
-            <button onClick={() => openModal("demo")} className="btn btn-secondary">Book en demo</button>
+            <button onClick={() => openModal("demo")} className="btn btn-secondary">Book demo</button>
             <button onClick={() => openModal("trial")} className="btn btn-primary">Meld interesse</button>
           </div>
         </div>
@@ -266,6 +266,9 @@ export default function Home() {
 
       {/* Trust Bar */}
       <TrustBadgeRow />
+
+      {/* Product Tour */}
+      <ProductTourSection />
 
       {/* Features Section */}
       <section id="funksjoner" className="features section">

@@ -177,10 +177,12 @@ export default function Home() {
             <li><a href="#funksjoner">Funksjoner</a></li>
             <li><a href="#sikkerhet">Sikkerhet</a></li>
             <li><a href="/demo">Se demo</a></li>
+            <li><a href="/book/demo-klinikk">Prøv booking</a></li>
             <li><a href="/startpakke">Startpakke</a></li>
             <li><a href="#kontakt">Kontakt</a></li>
           </ul>
           <div className="navbar-cta">
+            <a href="/login" className="btn btn-ghost">Logg inn</a>
             <button onClick={() => openModal("demo")} className="btn btn-secondary">Book en demo</button>
             <button onClick={() => openModal("trial")} className="btn btn-primary">Meld interesse</button>
           </div>

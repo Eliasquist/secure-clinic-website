@@ -387,6 +387,18 @@ body {
   color: var(--color-primary);
 }
 
+.btn-ghost {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: none;
+  padding: 12px 20px;
+}
+
+.btn-ghost:hover {
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
 /* ===== NAVBAR ===== */
 .navbar {
   position: fixed;

@@ -41,6 +41,16 @@ export default function Home() {
     message: ""
   });
   const [submitted, setSubmitted] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // Sticky navbar on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Auto-rotate images every 4 seconds
   useEffect(() => {
@@ -169,7 +179,7 @@ export default function Home() {
       )}
 
       {/* Navbar */}
-      <nav className="navbar">
+      <nav className={`navbar ${isScrolled ? 'navbar-sticky navbar-compact' : ''}`}>
         <div className="container">
           <a href="#" className="navbar-logo">
             <Image src="/logo.png" alt="Secure Clinic Journal" width={44} height={44} />

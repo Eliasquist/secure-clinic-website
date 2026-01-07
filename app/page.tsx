@@ -20,6 +20,7 @@ import {
 } from "./icons";
 import TrustBadgeRow from "./components/TrustBadgeRow";
 import ProductTourSection from "./components/ProductTourSection";
+import CompliancePreviewGrid from "./components/CompliancePreviewGrid";
 import ChatBot from "./ChatBot";
 
 const heroImages = [

@@ -38,6 +38,7 @@ interface ClinicInfo {
 export default function BookingPage() {
     const params = useParams();
     const clinicSlug = params.clinicSlug as string;
+    const isDemo = clinicSlug === 'demo-klinikk' || clinicSlug === 'oslo-demo';
 
     const [step, setStep] = useState<'service' | 'time' | 'details' | 'otp' | 'confirmed'>('service');
     const [clinic, setClinic] = useState<ClinicInfo | null>(null);

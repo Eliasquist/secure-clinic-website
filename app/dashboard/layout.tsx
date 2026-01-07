@@ -16,7 +16,7 @@ export default async function DashboardLayout({
 
     return (
         <SessionProvider session={session}>
-            <div style={{ minHeight: "100vh", background: "#0f172a" }}>
+            <div style={{ minHeight: "100vh", background: "#f9fafb" }}>
                 <DashboardNavbar user={session.user} />
                 <main style={{ padding: "2rem", maxWidth: "1400px", margin: "0 auto" }}>
                     {children}

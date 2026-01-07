@@ -18,6 +18,7 @@ import {
   CloudIcon,
   CheckIcon,
 } from "./icons";
+import TrustBadgeRow from "./components/TrustBadgeRow";
 import ChatBot from "./ChatBot";
 
 const heroImages = [

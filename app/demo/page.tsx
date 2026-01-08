@@ -4,6 +4,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import { ANATOMY_ZONES } from './anatomy';
+import { BookingsPageReplica } from './components/desktop-replica/bookings/BookingsPageReplica';
+import { mockBookings } from './mock-booking-data';
+
 
 // --- Inline Icons ---
 const SignatureIcon = () => (
@@ -531,7 +534,7 @@ export default function DemoPage() {
             </section>
 
             {/* Desktop App Replica Section */}
-            <section className="demo-section demo-app-section" style={{ background: '#fff' }}>
+            <section className="demo-section demo-app-section" style={{ background: '#f9fafb' }}>
                 <div className="container">
                     <div className="demo-section-header">
                         <span className="section-badge bg-blue-100 text-blue-800">For behandleren</span>
@@ -541,54 +544,8 @@ export default function DemoPage() {
                         </p>
                     </div>
 
-                    <div className="desktop-app-replica shadow-2xl border border-gray-200">
-                        {/* Sidebar */}
-                        <div className="da-sidebar">
-                            <div className="mb-6 px-2 font-bold text-gray-900 flex items-center gap-2">
-                                <Image src="/logo.png" width={24} height={24} alt="Logo" />
-                                Secure Clinic
-                            </div>
-
-                            {features.map((feature, index) => (
-                                <button
-                                    key={feature.id}
-                                    type="button"
-                                    className={`da-sidebar-item ${activeFeature === index ? 'active' : ''}`}
-                                    onClick={() => setActiveFeature(index)}
-                                >
-                                    <span>{feature.icon}</span>
-                                    {feature.title}
-                                </button>
-                            ))}
-
-                            <button type="button" className="da-sidebar-item text-red-600 hover:bg-red-50">
-                                <span>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                                        <polyline points="16 17 21 12 16 7" />
-                                        <line x1="21" y1="12" x2="9" y2="12" />
-                                    </svg>
-                                </span> Logg ut
-                            </button>
-                        </div>
-
-                        {/* Main Content */}
-                        <div className="da-main">
-                            {/* Header */}
-                            <div className="da-header">
-                                <h2>{features[activeFeature].title}</h2>
-                                <div className="flex items-center gap-4">
-                                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold">
-                                        DL
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Content View */}
-                            <div className="da-content bg-gray-50">
-                                {features[activeFeature].component}
-                            </div>
-                        </div>
+                    <div className="desktop-app-container border border-gray-200 rounded-xl overflow-hidden shadow-2xl bg-white" style={{ height: '700px' }}>
+                        <BookingsPageReplica mockData={mockBookings} />
                     </div>
 
                     <div className="text-center mt-12">

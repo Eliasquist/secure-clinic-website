@@ -474,7 +474,7 @@ export default function DemoPage() {
                             <div className="device-frame">
                                 <div className="device-screen">
                                     <iframe
-                                        src="/book/oslo-clinic"
+                                        src="/book/demo-klinikk"
                                         title="Booking Demo"
                                         className="demo-iframe"
                                     />
